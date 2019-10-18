@@ -6,13 +6,13 @@
 	<!--Card-->
 	<div class="card">
 		<div class="card-header">
-			Tambah Barang
+			Hapus Nasabah
 		</div>
 		<!--Card content-->
 		<div class="card-body">
 			<form method="post">{% csrf_token %}
-				{{ form.as_p }}
-				<input type="submit" class="btn btn-primary" value="Save">
+				<p>Are you sure you want to delete "{{ object }}"?</p>
+				<input type="submit" value="Confirm">
 			</form>
 		</div>
 
