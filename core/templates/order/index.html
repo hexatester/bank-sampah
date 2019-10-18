@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!--Grid row-->
+<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
+
+	<!--Card-->
+	<div class="card mb-5">
+		<div class="card-header">
+			Nasabah <a href="/add/user" class="badge badge-success">Tambah</a>
+		</div>
+		<!--Card content-->
+		<div class="card-body">
+			<form>
+				<div class="form-group row">
+					<label for="staticEmail" class="col-form-label">Nasabah</label>
+					<div class="col-sm-10">
+						<input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{ nasabah.name }}">
+					</div>
+				</div>
+				<div class="form-group row">
+					<label for="item">Barang</label>
+					<select class="form-control form-control-sm" id="item">
+					{% for item in items %}
+					<option value="{{ item.pk }}">{{ item.name }} - {{ item.price }}</option>
+					{% endfor %}
+					</select>
+				</div>
+				 <button type="submit" class="btn btn-primary mb-2">Confirm identity</button>
+			</form>
+		</div>
+
+	</div>
+	<!--/.Card-->
+
+</div>
+<!--Grid row-->
+
+<!--Grid row-->
+<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
+
+	<!--Card-->
+	<div class="card">
+		<div class="card-header">
+			Penimbangan
+		</div>
+		<!--Card content-->
+		<div class="card-body">
+
+			<!-- Table  -->
+			<table class="table table-hover">
+				<!-- Table head -->
+				<thead class="blue lighten-4">
+					<tr>
+						<th>#</th>
+						<th>Nama</th>
+						<th>Harga</th>
+						<th>Jumlah</th>
+						<th>Total</th>
+					</tr>
+				</thead>
+				<!-- Table head -->
+
+				<!-- Table body -->
+				<tbody>
+					{% if order.item %}
+					{% for item in order.items %}
+					<tr>
+						<th scope="row">{{ object.pk }}</th>
+						<td>{{ item.item.name }}</td>
+						<td>{{ item.item.price }}</td>
+						<td>{{ item.value }}</td>
+						<td>{{ item.get_sum }}</td>
+					</tr>
+					{% endfor %}
+					{% endif %}
+				</tbody>
+				<!-- Table body -->
+			</table>
+			<!-- Table  -->
+
+		</div>
+
+	</div>
+	<!--/.Card-->
+
+</div>
+<!--Grid row-->
+{% endblock content %}
