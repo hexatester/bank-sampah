@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views import View
 from .models import (
     Nasabah,
@@ -10,7 +10,8 @@ from .models import (
     Order
 )
 from .forms import (
-    UserCreateForm
+    NasabahCreateForm,
+    ItemCreateForm
 )
 
 # Create your views here.
@@ -42,8 +43,28 @@ class UserListView(ListView):
 
 class UserCreateView(CreateView):
     model = Nasabah
-    fields = ['name', 'addres', 'user']
-    template_name = 'nasabah/add.html'
+    form_class = NasabahCreateForm
+    template_name = 'nasabah/create.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'form': self.form_class()
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            nasabah = form.save(commit=False)
+            nasabah.user = request.user
+            nasabah.save()
+            return HttpResponseRedirect(reverse("core:user", kwargs={
+                'pk': nasabah.pk
+            }))
+        context = {
+            'form': form
+        }
+        return render(request=request, template_name=self.template_name, context=context)
 
 
 class UserUpdateView(UpdateView):
@@ -51,9 +72,17 @@ class UserUpdateView(UpdateView):
     fields = ['name', 'addres']
     template_name = 'nasabah/detail.html'
 
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        obj.user = self.request.user
+        obj.save()
+        return obj
 
-class UserDeleteView(View):
+
+class UserDeleteView(DeleteView):
     model = Nasabah
+    template_name = 'nasabah/delete.html'
+    success_url = '/users'
 
 
 class ItemListView(ListView):
@@ -73,17 +102,48 @@ class ItemUpdateView(UpdateView):
     fields = ['name', 'price']
     template_name = 'item/detail.html'
 
-    def get(self, request, pk, *args, **kwargs):
-        obj = get_object_or_404(self.model, pk=pk, user=request.user)
-        context = {
-            'head_title': obj.name,
-            'object': obj
-        }
-        return render(request=request, template_name=self.template_name, context=context)
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        obj.user = self.request.user
+        obj.save()
+        return obj
 
 
 class ItemCreateView(CreateView):
     model = Item
+    form_class = ItemCreateForm
+    template_name = 'item/create.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'form': self.form_class()
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.user = request.user
+            item.save()
+            return HttpResponseRedirect(reverse("core:user", kwargs={
+                'pk': item.pk
+            }))
+        context = {
+            'form': form
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+
+class ItemDeleteView(DeleteView):
+    model = Item
+    template_name = 'item/delete.html'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        obj.user = self.request.user
+        obj.save()
+        return obj
 
 
 def order(request, pk):

@@ -22,10 +22,19 @@ class Nasabah(models.Model):
             'pk': self.pk
         })
 
+    def get_delete_url(self):
+        return reverse("core:delete_user", kwargs={
+            'pk': self.pk
+        })
+
     def get_order_url(self):
         return reverse("core:order", kwargs={
             'pk': self.pk
         })
+
+    def add_balance(self, value: int):
+        self.balance += abs(value)
+        return self.balance
 
 
 class Item(models.Model):
@@ -48,6 +57,7 @@ class Item(models.Model):
 class OrderItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     value = models.PositiveSmallIntegerField()
+    total = models.PositiveIntegerField(null=True, blank=True)
     nasabah = models.ForeignKey(Nasabah, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
@@ -58,15 +68,27 @@ class OrderItem(models.Model):
     def get_sum(self):
         return self.item.price*self.value
 
+    def sum(self):
+        self.total = self.get_sum()
+        return self.total
+
 
 class Order(models.Model):
     nasabah = models.ForeignKey(Nasabah, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    items = models.ManyToManyField(OrderItem, null=True)
+    items = models.ManyToManyField(OrderItem)
+    total = models.PositiveIntegerField(null=True, blank=True)
     ordered = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return "Order by {}".format(self.nasabah)
+
+    def get_sum(self):
+        sums = 0
+        for item in self.items:
+            sums += item.sum()
+        self.total = sums
+        return sums

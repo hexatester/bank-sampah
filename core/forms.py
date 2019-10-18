@@ -1,9 +1,17 @@
 from django import forms
 from .models import (
-    Nasabah
+    Nasabah,
+    Item
 )
 
 
-class UserCreateForm(forms.Form):
-    name = forms.CharField(label='Nama', max_length=64)
-    addres = forms.CharField(label='Alamat', max_length=126)
+class NasabahCreateForm(forms.ModelForm):
+    class Meta:
+        model = Nasabah
+        fields = ['name', 'addres']
+
+
+class ItemCreateForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ['name', 'price']
