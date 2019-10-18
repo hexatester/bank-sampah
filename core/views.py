@@ -15,8 +15,10 @@ from .forms import (
 
 # Create your views here.
 
+
 def index(request):
     return render(request=request, template_name='core/index.html')
+
 
 @login_required
 def nasabah_list_view(request):
@@ -29,14 +31,14 @@ def nasabah_list_view(request):
 class UserListView(ListView):
     model = Nasabah
     template_name = 'nasabah/index.html'
-    
+
     def get(self, request, *args, **kwargs):
         context = {
             'head_title': 'Nasabah',
             'object_list': self.model.objects.filter(user=request.user)
         }
         return render(request=request, template_name=self.template_name, context=context)
-        
+
 
 class UserCreateView(CreateView):
     model = Nasabah
@@ -57,7 +59,7 @@ class UserDeleteView(View):
 class ItemListView(ListView):
     model = Item
     template_name = 'item/index.html'
-    
+
     def get(self, request, *args, **kwargs):
         context = {
             'head_title': 'Barang',
@@ -71,7 +73,7 @@ class ItemUpdateView(UpdateView):
     fields = ['name', 'price']
     template_name = 'item/detail.html'
 
-    def get(self, request, pk,*args, **kwargs):
+    def get(self, request, pk, *args, **kwargs):
         obj = get_object_or_404(self.model, pk=pk, user=request.user)
         context = {
             'head_title': obj.name,
@@ -86,7 +88,8 @@ class ItemCreateView(CreateView):
 
 def order(request, pk):
     nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
-    order, created = Order.objects.get_or_create(user=request.user, nasabah=nasabah, ordered=False)
+    order, created = Order.objects.get_or_create(
+        user=request.user, nasabah=nasabah, ordered=False)
     context = {
         'order': order,
         'nasabah': nasabah,
