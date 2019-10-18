@@ -11,7 +11,8 @@ from .models import (
 )
 from .forms import (
     NasabahCreateForm,
-    ItemCreateForm
+    ItemCreateForm,
+    OrderItemCreateForm
 )
 
 # Create your views here.
@@ -19,14 +20,6 @@ from .forms import (
 
 def index(request):
     return render(request=request, template_name='core/index.html')
-
-
-@login_required
-def nasabah_list_view(request):
-    context = {
-        'items': Nasabah.objects.get(user=request.user)
-    }
-    return render(request=request, template_name='nasabah/index.html', context=context)
 
 
 class UserListView(ListView):
@@ -132,12 +125,14 @@ class ItemCreateView(CreateView):
         context = {
             'form': form
         }
+        # Messages sucess creating item
         return render(request=request, template_name=self.template_name, context=context)
 
 
 class ItemDeleteView(DeleteView):
     model = Item
     template_name = 'item/delete.html'
+    success_url = '/items'
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset=queryset)
@@ -146,13 +141,90 @@ class ItemDeleteView(DeleteView):
         return obj
 
 
-def order(request, pk):
-    nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
-    order, created = Order.objects.get_or_create(
-        user=request.user, nasabah=nasabah, ordered=False)
-    context = {
-        'order': order,
-        'nasabah': nasabah,
-        'items': Item.objects.filter(user=request.user)
-    }
-    return render(request=request, template_name='order/index.html')
+class OrderListView(ListView):
+    model = Order
+    template_name = ''
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'head_title': 'Daftar Transaksi',
+            'object_list': self.model.objects.filter(user=request.user)
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+
+class OrderItemView(View):
+    template_name = ''
+
+    def get(self, request, pk, *args, **kwargs):
+        nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
+        order = get_object_or_404(
+            Order, user=request.user, nasabah=nasabah, ordered=False)
+        context = {
+            'order': order
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+    def post(self, request, pk, *args, **kwargs):
+        nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
+        order = get_object_or_404(
+            Order, user=request.user, nasabah=nasabah, ordered=False)
+        context = {
+            'order': order,
+            'nasabah': nasabah,
+            'items': Item.objects.filter(user=request.user)
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+
+class OrderCreateView(View):
+    model = Order
+    template_name = 'order/index.html'
+    form_class = OrderItemCreateForm
+
+    def get(self, request, pk, *args, **kwargs):
+        nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
+        orders, created = Order.objects.get_or_create(
+            user=request.user, nasabah=nasabah, ordered=False
+        )
+        context = {
+            'form': OrderItemCreateForm(user=request.user)
+        }
+        if not created:
+            context['order'] = orders
+        return render(request=request, template_name=self.template_name, context=context)
+
+    def post(self, request, pk, *args, **kwargs):
+        nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
+        if self.autos(request, nasabah):
+            return HttpResponseRedirect(nasabah.get_order_url())
+        return HttpResponseRedirect(nasabah.get_order_url())
+
+    def autos(self, request, nasabah):
+        form = self.form_class(request.POST, user=request.user)
+        if not form.is_valid():
+            return False
+        order_item = form.save(commit=False)
+        order_item.nasabah = nasabah
+        order_item.user = request.user
+        order_item.save()
+        orders, created = Order.objects.get_or_create(
+            user=request.user, nasabah=nasabah, ordered=False
+        )
+        if created:
+            orders.save()
+        orders.items.add(order_item)
+        orders.save()
+        return True
+
+
+class OrderDeleteView(DeleteView):
+    model = Order
+    template_name = 'order/delete.html'
+    success_url = '/users'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        obj.user = self.request.user
+        obj.save()
+        return obj

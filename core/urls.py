@@ -9,7 +9,8 @@ from .views import (
     ItemUpdateView,
     ItemCreateView,
     ItemDeleteView,
-    order
+    OrderCreateView,
+    OrderDeleteView
 )
 
 app_name = 'core'
@@ -24,5 +25,6 @@ urlpatterns = [
     path('item/del/<pk>', ItemDeleteView.as_view(), name='delete_item'),
     path('items', ItemListView.as_view(), name='items'),
     path('item/<pk>/', ItemUpdateView.as_view(), name='item'),
-    path('order/<pk>/', order, name='order')
+    path('order/del/<pk>', OrderDeleteView.as_view(), name='delete_order'),
+    path('order/<pk>/', OrderCreateView.as_view(), name='order')
 ]
