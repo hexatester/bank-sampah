@@ -1,48 +1,35 @@
 {% extends "base.html" %}
-{% block content %}
 
+{% block content %}
 <!--Grid row-->
 <div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 
 	<!--Card-->
-	<div class="card mb-5">
+	<div class="card mt-2 ml-5">
 		<div class="card-header">
-			Nasabah <a href="/add/user" class="badge badge-success">Tambah</a>
+			Barang
 		</div>
 		<!--Card content-->
 		<div class="card-body">
-			<form>
-				<div class="form-group row">
-					<label for="staticEmail" class="col-form-label">Nasabah</label>
-					<div class="col-sm-10">
-						<input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{ nasabah.name }}">
-					</div>
-				</div>
-				<div class="form-group row">
-					<label for="item">Barang</label>
-					<select class="form-control form-control-sm" id="item">
-					{% for item in items %}
-					<option value="{{ item.pk }}">{{ item.name }} - {{ item.price }}</option>
-					{% endfor %}
-					</select>
-				</div>
-				 <button type="submit" class="btn btn-primary mb-2">Confirm identity</button>
+			<form method="post">{% csrf_token %}
+				{{ form.as_p }}
+				<input type="submit" class="btn btn-primary" value="Tambahkan">
 			</form>
 		</div>
-
 	</div>
 	<!--/.Card-->
 
 </div>
 <!--Grid row-->
 
+{% if order %}
 <!--Grid row-->
 <div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 
 	<!--Card-->
-	<div class="card">
+	<div class="card mt-2 ml-5">
 		<div class="card-header">
-			Penimbangan
+			Order <a href="{{ order.get_delete_url }}" class="badge badge-danger">Hapus</a>
 		</div>
 		<!--Card content-->
 		<div class="card-body">
@@ -63,17 +50,15 @@
 
 				<!-- Table body -->
 				<tbody>
-					{% if order.item %}
-					{% for item in order.items %}
+					{% for orderitem in order.items.all %}
 					<tr>
-						<th scope="row">{{ object.pk }}</th>
-						<td>{{ item.item.name }}</td>
-						<td>{{ item.item.price }}</td>
-						<td>{{ item.value }}</td>
-						<td>{{ item.get_sum }}</td>
+						<th scope="row">{{ orderitem.pk }}</th>
+						<td>{{ orderitem.item.name }}</td>
+						<td>{{ orderitem.item.price }}</td>
+						<td>{{ orderitem.value }}</td>
+						<td>{{ orderitem.sum }}</td>
 					</tr>
 					{% endfor %}
-					{% endif %}
 				</tbody>
 				<!-- Table body -->
 			</table>
@@ -83,6 +68,7 @@
 
 	</div>
 	<!--/.Card-->
+{% endif %}
 
 </div>
 <!--Grid row-->

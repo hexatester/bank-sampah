@@ -5,7 +5,7 @@
 <div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 
 	<!--Card-->
-	<div class="card">
+	<div class="card mt-2 ml-5">
 		<div class="card-header">
 			Barang <a href="/item/add" class="badge badge-success">Tambah</a>
 		</div>
@@ -29,7 +29,7 @@
 					{% for object in object_list %}
 					<tr>
 						<th scope="row">{{ object.pk }}</th>
-						<td>{{ object.name }} <a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit</a></td>
+						<td>{{ object.name }} <a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit</a> <a href="{{ object.get_delete_url }}" class="badge badge-danger">Hapus</a></td></td>
 						<td>{{ object.price }}</td>
 						<td>{{ object.created }}</td>
 					</tr>
