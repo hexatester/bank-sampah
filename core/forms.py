@@ -58,7 +58,7 @@ class OrderItemCreateForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super(OrderItemCreateForm, self).__init__(*args, **kwargs)
         self.fields['item'].queryset = Item.objects.filter(user=user)
-    
+
     class Meta:
         model = OrderItem
         fields = ['item', 'value']
@@ -76,3 +76,16 @@ class OrderItemCreateForm(forms.ModelForm):
                 'min_value': _('Minimal 0.25'),
             },
         }
+
+
+class OrderSubmitForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['sums']
+        help_texts = {
+            'sums': _('Tambahkan ke saldo?'),
+        }
+
+
+class WithdrawForm(forms.Form):
+    value = forms.IntegerField(min_value=100)

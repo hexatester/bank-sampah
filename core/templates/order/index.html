@@ -1,75 +1,64 @@
 {% extends "base.html" %}
-
+{% load humanize %}
 {% block content %}
-<!--Grid row-->
-<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 
-	<!--Card-->
-	<div class="card mt-2 ml-5">
-		<div class="card-header">
-			Barang
-		</div>
-		<!--Card content-->
-		<div class="card-body">
-			<form method="post">{% csrf_token %}
-				{{ form.as_p }}
-				<input type="submit" class="btn btn-primary" value="Tambahkan">
-			</form>
-		</div>
-	</div>
-	<!--/.Card-->
-
+<div class="card-header">
+	Timbang Barang
 </div>
-<!--Grid row-->
+
+<form method="post">{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" class="btn btn-primary" value="Tambahkan">
+</form>
 
 {% if order %}
-<!--Grid row-->
-<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
+<div class="card-header mt-5">
+	Order
+	<a href="{{ order.get_set_url }}" class="badge badge-primary">Simpan</a>
+	<a href="{{ order.get_delete_url }}" class="badge badge-danger">Reset / Hapus</a>
+</div>
+<!-- Table  -->
+<table class="table table-hover">
+	<!-- Table head -->
+	<thead class="blue lighten-4">
+		<tr>
+			<th>Nama</th>
+			<th>Harga</th>
+			<th>Berat</th>
+			<th>Total</th>
+			<th>Hapus</th>
+		</tr>
+	</thead>
+	<!-- Table head -->
 
-	<!--Card-->
-	<div class="card mt-2 ml-5">
-		<div class="card-header">
-			Order <a href="{{ order.get_delete_url }}" class="badge badge-danger">Hapus</a>
-		</div>
-		<!--Card content-->
-		<div class="card-body">
-
-			<!-- Table  -->
-			<table class="table table-hover">
-				<!-- Table head -->
-				<thead class="blue lighten-4">
-					<tr>
-						<th>#</th>
-						<th>Nama</th>
-						<th>Harga</th>
-						<th>Jumlah</th>
-						<th>Total</th>
-					</tr>
-				</thead>
-				<!-- Table head -->
-
-				<!-- Table body -->
-				<tbody>
-					{% for orderitem in order.items.all %}
-					<tr>
-						<th scope="row">{{ orderitem.pk }}</th>
-						<td>{{ orderitem.item.name }}</td>
-						<td>{{ orderitem.item.price }}</td>
-						<td>{{ orderitem.value }}</td>
-						<td>{{ orderitem.sum }}</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-				<!-- Table body -->
-			</table>
-			<!-- Table  -->
-
-		</div>
-
-	</div>
-	<!--/.Card-->
+	<!-- Table body -->
+	<tbody>
+		{% for orderitem in order.items.all %}
+		<tr>
+			<td>{{ orderitem.item.name }}</td>
+			<td>Rp {{ orderitem.item.price|intcomma }}</td>
+			<td>{{ orderitem.value }} kg</td>
+			<td>Rp {{ orderitem.sum|intcomma }}</td>
+			<td>
+			{% comment %} <form method="get">
+				<input type="hidden" name="update" value="{{ orderitem.pk }}">
+				<input type="submit" class="btn btn-primary" value="Edit">
+			</form> {% endcomment %}
+			<form method="get">
+				<input type="hidden" name="delete" value="{{ orderitem.pk }}">
+				<input type="submit" class="btn badge-danger" value="Hapus">
+			</form>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<!-- Table body -->
+</table>
+<!-- Table  -->
+<div class="card-header mt-5">
+	Total : Rp {{ order.get_sum|intcomma }}
+</div>
 {% endif %}
 
-</div>
-<!--Grid row-->
+
 {% endblock content %}

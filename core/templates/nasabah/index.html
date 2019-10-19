@@ -1,54 +1,41 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% block content %}
 
-<!--Grid row-->
-<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 
-	<!--Card-->
-	<div class="card mt-2 ml-5">
-		<div class="card-header">
-			Nasabah <a href="/user/add" class="badge badge-success">Tambah</a>
-		</div>
-		<!--Card content-->
-		<div class="card-body">
-			<!-- Table  -->
-			<table class="table table-hover">
-				<!-- Table head -->
-				<thead class="blue lighten-4">
-					<tr>
-						<th>#</th>
-						<th>Nama</th>
-						<th>Saldo</th>
-						<th>Transaksi</th>
-						<th>Alamat</th>
-						<th>Terakhir diedit</th>
-					</tr>
-				</thead>
-				<!-- Table head -->
-
-				<!-- Table body -->
-				<tbody>
-					{% for object in object_list %}
-					<tr>
-						<th scope="row">{{ object.pk }}</th>
-						<td>{{ object.name }} <a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit</a></td>
-						<td>{{ object.balance }}</td>
-						<td><a href="{{ object.get_order_url }}" class="badge badge-success">Tambah</a> <a href="{{ object.get_absolute_url }}" class="badge badge-danger">Kurang</a></td>
-						<td>{{ object.addres }}</td>
-						<td>{{ object.timestamp }}</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-				<!-- Table body -->
-			</table>
-			<!-- Table  -->
-
-		</div>
-
-	</div>
-	<!--/.Card-->
-
+<div class="card-header">
+	Nasabah <a href="{% url 'core:create_user' %}" class="badge badge-success">Tambah</a>
 </div>
-<!--Grid row-->
+
+<!-- Table  -->
+<table class="table table-hover">
+	<!-- Table head -->
+	<thead class="blue lighten-4">
+		<tr>
+			<th>id</th>
+			<th>Nama</th>
+			<th>Saldo</th>
+			<th>Transaksi</th>
+			<th>Alamat</th>
+		</tr>
+	</thead>
+	<!-- Table head -->
+
+	<!-- Table body -->
+	<tbody>
+		{% for object in object_list %}
+		<tr>
+			<th scope="row">{{ object.pk }}</th>
+			<td>{{ object.name }} <a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit</a></td>
+			<td>Rp {{ object.balance|intcomma }}</td>
+			<td><a href="{{ object.get_order_url }}" class="badge badge-success">Tambah</a> <a href="{{ object.get_withdraw_url }}" class="badge badge-danger">Kurang</a></td>
+			<td>{{ object.addres }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<!-- Table body -->
+</table>
+<!-- Table  -->
+
 
 {% endblock content %}

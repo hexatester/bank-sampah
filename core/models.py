@@ -32,6 +32,11 @@ class Nasabah(models.Model):
         return reverse("core:order", kwargs={
             'pk': self.pk
         })
+    
+    def get_withdraw_url(self):
+        return reverse("core:withdraw", kwargs={
+            'pk': self.pk
+        })
 
     def add_balance(self, value: int):
         self.balance += abs(value)
@@ -85,6 +90,7 @@ class Order(models.Model):
                              on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem)
     total = models.PositiveIntegerField(null=True, blank=True)
+    sums = models.BooleanField(default=True)
     ordered = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -95,9 +101,19 @@ class Order(models.Model):
     def delete(self, using=None, keep_parents=False):
         self.items.all().delete()
         return super().delete(using=using, keep_parents=keep_parents)
+    
+    def get_absolute_url(self):
+        return reverse("core:order", kwargs={
+            'pk': self.nasabah.pk
+        })
 
     def get_delete_url(self):
         return reverse("core:delete_order", kwargs={
+            'pk': self.pk
+        })
+    
+    def get_set_url(self):
+        return reverse("core:order_set", kwargs={
             'pk': self.pk
         })
 
@@ -106,4 +122,12 @@ class Order(models.Model):
         for item in self.items.all():
             sums += item.sum()
         self.total = sums
-        return sums
+        return abs(sums)
+    
+    def get_values(self):
+        value = 0
+        for item in self.items.all():
+            value += abs(item.value)
+        self.total = value
+        return value
+

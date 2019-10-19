@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, reverse
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views import View
 from .models import (
@@ -13,17 +13,13 @@ from .models import (
 from .forms import (
     NasabahCreateForm,
     ItemCreateForm,
-    OrderItemCreateForm
+    OrderItemCreateForm,
+    OrderSubmitForm,
+    WithdrawForm
 )
 
 # Create your views here.
 
-
-def index(request):
-    return render(request=request, template_name='core/index.html')
-
-def logout_view(request):
-    pass
 
 class IndexView(View):
     template_name = 'core/index.html'
@@ -42,11 +38,14 @@ class Login(LoginView):
     template_name = 'core/login.html'
     next = '/'
 
-class Logout(LogoutView):
-    next_page = '/'
-    
 
-class UserListView(ListView):
+class Logout(LoginRequiredMixin, LogoutView):
+    login_url = '/login'
+    next_page = '/'
+
+
+class UserListView(LoginRequiredMixin, ListView):
+    login_url = '/login'
     model = Nasabah
     template_name = 'nasabah/index.html'
 
@@ -58,7 +57,8 @@ class UserListView(ListView):
         return render(request=request, template_name=self.template_name, context=context)
 
 
-class UserCreateView(CreateView):
+class UserCreateView(LoginRequiredMixin, CreateView):
+    login_url = '/login'
     model = Nasabah
     form_class = NasabahCreateForm
     template_name = 'nasabah/create.html'
@@ -84,7 +84,8 @@ class UserCreateView(CreateView):
         return render(request=request, template_name=self.template_name, context=context)
 
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(LoginRequiredMixin, UpdateView):
+    login_url = '/login'
     model = Nasabah
     fields = ['name', 'addres']
     template_name = 'nasabah/detail.html'
@@ -96,13 +97,15 @@ class UserUpdateView(UpdateView):
         return obj
 
 
-class UserDeleteView(DeleteView):
+class UserDeleteView(LoginRequiredMixin, DeleteView):
+    login_url = '/login'
     model = Nasabah
     template_name = 'nasabah/delete.html'
     success_url = '/users'
 
 
-class ItemListView(ListView):
+class ItemListView(LoginRequiredMixin, ListView):
+    login_url = '/login'
     model = Item
     template_name = 'item/index.html'
 
@@ -114,7 +117,8 @@ class ItemListView(ListView):
         return render(request=request, template_name=self.template_name, context=context)
 
 
-class ItemUpdateView(UpdateView):
+class ItemUpdateView(LoginRequiredMixin, UpdateView):
+    login_url = '/login'
     model = Item
     fields = ['name', 'price']
     template_name = 'item/detail.html'
@@ -126,7 +130,8 @@ class ItemUpdateView(UpdateView):
         return obj
 
 
-class ItemCreateView(CreateView):
+class ItemCreateView(LoginRequiredMixin, CreateView):
+    login_url = '/login'
     model = Item
     form_class = ItemCreateForm
     template_name = 'item/create.html'
@@ -153,7 +158,8 @@ class ItemCreateView(CreateView):
         return render(request=request, template_name=self.template_name, context=context)
 
 
-class ItemDeleteView(DeleteView):
+class ItemDeleteView(LoginRequiredMixin, DeleteView):
+    login_url = '/login'
     model = Item
     template_name = 'item/delete.html'
     success_url = '/items'
@@ -165,7 +171,8 @@ class ItemDeleteView(DeleteView):
         return obj
 
 
-class OrderListView(ListView):
+class OrderListView(LoginRequiredMixin, ListView):
+    login_url = '/login'
     model = Order
     template_name = 'order/index.html'
 
@@ -177,7 +184,8 @@ class OrderListView(ListView):
         return render(request=request, template_name=self.template_name, context=context)
 
 
-class OrderItemView(View):
+class OrderItemView(LoginRequiredMixin, View):
+    login_url = '/login'
     template_name = ''
 
     def get(self, request, pk, *args, **kwargs):
@@ -201,7 +209,8 @@ class OrderItemView(View):
         return render(request=request, template_name=self.template_name, context=context)
 
 
-class OrderCreateView(View):
+class OrderCreateView(LoginRequiredMixin, View):
+    login_url = '/login'
     model = Order
     template_name = 'order/index.html'
     form_class = OrderItemCreateForm
@@ -211,8 +220,19 @@ class OrderCreateView(View):
         orders, created = Order.objects.get_or_create(
             user=request.user, nasabah=nasabah, ordered=False
         )
+        if request.GET.get('update'):
+            order_item = get_object_or_404(OrderItem, pk=request.GET.get(
+                'update'), nasabah=nasabah, user=request.user)
+            form = OrderItemCreateForm(instance=order_item, user=request.user)
+        elif request.GET.get('delete'):
+            order_item = get_object_or_404(OrderItem, pk=request.GET.get(
+                'delete'), nasabah=nasabah, user=request.user)
+            order_item.delete()
+            form = OrderItemCreateForm(user=request.user)
+        else:
+            form = OrderItemCreateForm(user=request.user)
         context = {
-            'form': OrderItemCreateForm(user=request.user)
+            'form': form
         }
         if not created:
             context['order'] = orders
@@ -242,7 +262,8 @@ class OrderCreateView(View):
         return True
 
 
-class OrderDeleteView(DeleteView):
+class OrderDeleteView(LoginRequiredMixin, DeleteView):
+    login_url = '/login'
     model = Order
     template_name = 'order/delete.html'
     success_url = '/users'
@@ -252,3 +273,59 @@ class OrderDeleteView(DeleteView):
         obj.user = self.request.user
         obj.save()
         return obj
+
+
+class OrderSubmitView(LoginRequiredMixin, View):
+    login_url = '/login'
+    template_name = 'order/get.html'
+
+    def get(self, request, pk, *args, **kwargs):
+        order = get_object_or_404(Order, pk=pk, user=request.user)
+        context = {
+            'form': OrderSubmitForm()
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+    def post(self, request, pk, *args, **kwargs):
+        order = get_object_or_404(Order, pk=pk, user=request.user)
+        form = OrderSubmitForm(request.POST, instance=order)
+        if form.is_valid():
+            if form.cleaned_data['sums']:
+                order = form.save(commit=False)
+                order.ordered = True
+                nasabah = order.nasabah
+                nasabah.add_balance(order.get_sum())
+                nasabah.save()
+            else:
+                order.total = order.get_sum()
+            order.save()
+        return HttpResponseRedirect('/')
+
+
+class WithdrawView(LoginRequiredMixin, View):
+    login_url = '/login'
+    model = Nasabah
+    template_name = 'nasabah/withdraw.html'
+    forms = WithdrawForm
+
+    def get(self, request, pk, *args, **kwargs):
+        context = {
+            'head_title': 'Kurangi Saldo',
+            'nasabah': get_object_or_404(Nasabah, pk=pk, user=request.user),
+            'form': self.forms()
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+    def post(self, request, pk, *args, **kwargs):
+        nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
+        form = self.forms(request.POST)
+        if form.is_valid():
+            if form.cleaned_data.get('value') <= nasabah.balance:
+                nasabah.balance -= form.cleaned_data.get('value')
+                nasabah.save()
+        context = {
+            'head_title': 'Kurangi Saldo',
+            'nasabah': nasabah,
+            'form': self.forms()
+        }
+        return render(request=request, template_name=self.template_name, context=context)

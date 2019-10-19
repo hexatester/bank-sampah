@@ -1,25 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 
-	<!--Card-->
-	<div class="card mt-2 ml-5">
-		<div class="card-header">
-			Hapus Barang
-		</div>
-		<!--Card content-->
-		<div class="card-body">
-			<form method="post">{% csrf_token %}
-				<p>Are you sure you want to delete "{{ object }}"?</p>
-				<input type="submit" value="Confirm">
-			</form>
-		</div>
-
-	</div>
-	<!--/.Card-->
-
+<div class="card-header">
+	Hapus Barang
 </div>
-<!--Grid row-->
+<!--Card content-->
+<div class="card-body">
+	<form method="post">{% csrf_token %}
+		<p>Hapus barang dengan nama "{{ object.name }}"?</p>
+		<p>Semua order dengan barang "{{ object.name }}" akan ikut terhapus!</p>
+		<input type="submit" class="btn btn-danger" value="YA!">
+	</form>
+</div>
+
 
 {% endblock content %}

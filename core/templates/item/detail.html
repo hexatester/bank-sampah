@@ -1,29 +1,22 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% block content %}
 
-<!--Grid row-->
-<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 
-	<!--Card-->
-	<div class="card mt-2 ml-5">
-		<div class="card-header">
-			{{ object.name }}
-		</div>
-		<!--Card content-->
-		<div class="card-body">
-            <form method="post">{% csrf_token %}
-                {{ form.as_p }}
-                <input type="submit" class="btn btn-primary" value="Update">
-            </form>
-		</div>
-		<div class="card-footer">
-            <h6>Terakhir dirubah : {{ object.timestamp }}</h6>
-		</div>
-
-	</div>
-	<!--/.Card-->
-
+<div class="card-header">
+	{{ object.name }}
 </div>
-<!--Grid row-->
+<!--Card content-->
+<div class="card-body">
+	<form method="post">{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" class="btn btn-primary" value="Update">
+	</form>
+</div>
+<div class="card-footer">
+	<h6>Terakhir dilihat : {{ object.timestamp|naturaltime }}</h6>
+	<h6>Dibuat : {{ object.created|naturaltime }}</h6>
+</div>
+
 
 {% endblock content %}

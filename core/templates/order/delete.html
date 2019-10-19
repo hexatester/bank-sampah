@@ -1,25 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
 
-	<!--Card-->
-	<div class="card mt-2 ml-5">
-		<div class="card-header">
-			Hapus Order
-		</div>
-		<!--Card content-->
-		<div class="card-body">
-			<form method="post">{% csrf_token %}
-				<p>Are you sure you want to delete "{{ object }}"?</p>
-				<input type="submit" value="Confirm">
-			</form>
-		</div>
-
+<div class="card mt-2 ml-5">
+	<div class="card-header">
+		Hapus Order
 	</div>
-	<!--/.Card-->
-
+	<!--Card content-->
+	<div class="card-body">
+		<form method="post">{% csrf_token %}
+			<p>Hapus order "{{ object }}"?</p>
+			<input type="submit" value="Confirm">
+		</form>
+	</div>
 </div>
-<!--Grid row-->
 
 {% endblock content %}
