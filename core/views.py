@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, re
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.views import View
 from .models import (
     Nasabah,
@@ -21,6 +22,29 @@ from .forms import (
 def index(request):
     return render(request=request, template_name='core/index.html')
 
+def logout_view(request):
+    pass
+
+class IndexView(View):
+    template_name = 'core/index.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return HttpResponseRedirect('/login')
+        context = {
+            'nasabah_list': Nasabah.objects.filter(user=request.user),
+            'orders': Order.objects.filter(user=request.user)
+        }
+        return render(request=request, template_name=self.template_name, context=context)
+
+
+class Login(LoginView):
+    template_name = 'core/login.html'
+    next = '/'
+
+class Logout(LogoutView):
+    next_page = '/'
+    
 
 class UserListView(ListView):
     model = Nasabah
@@ -119,7 +143,7 @@ class ItemCreateView(CreateView):
             item = form.save(commit=False)
             item.user = request.user
             item.save()
-            return HttpResponseRedirect(reverse("core:user", kwargs={
+            return HttpResponseRedirect(reverse("core:item", kwargs={
                 'pk': item.pk
             }))
         context = {
@@ -143,7 +167,7 @@ class ItemDeleteView(DeleteView):
 
 class OrderListView(ListView):
     model = Order
-    template_name = ''
+    template_name = 'order/index.html'
 
     def get(self, request, *args, **kwargs):
         context = {

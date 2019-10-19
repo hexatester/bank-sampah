@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row wow fadeIn animated" style="visibility: visible; animation-name: fadeIn;">
+
+    <!--Card-->
+    <div class="card mt-2 ml-5">
+        <div class="card-header">
+            Login
+        </div>
+        <!--Card content-->
+        <div class="card-body">
+            {% if form.errors %}
+            <p>Username dan password tidak cocok.</p>
+            {% endif %}
+            {% if next %}
+            {% if user.is_authenticated %}
+            <a href='/'>Dashboard</a>
+            {% else %}
+            <p>Tolong login.</p>
+            {% endif %}
+            {% endif %}
+            <form method="post" action="{% url 'core:login' %}">{% csrf_token %}
+                <table>
+                    <tr>
+                        <td> {{ form.username.label_tag }}</td>
+                        <td> {{ form.username }} </td>
+                    </tr>
+                    <tr>
+                        <td> {{ form.password.label_tag }}</td>
+                        <td> {{ form.password }} </td>
+                    </tr>
+                </table>
+                <input type="submit" class="btn btn-primary" value="login">
+                <input type="hidden" name='next' value="{{ next }}">
+            </form>
+        </div>
+
+    </div>
+    <!--/.Card-->
+
+</div>
+<!--Grid row-->
+
+{% endblock content %}
