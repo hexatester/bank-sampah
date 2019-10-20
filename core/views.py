@@ -29,7 +29,7 @@ class IndexView(View):
             return HttpResponseRedirect('/login')
         context = {
             'nasabah_list': Nasabah.objects.filter(user=request.user),
-            'orders': Order.objects.filter(user=request.user)
+            'orders': Order.objects.filter(user=request.user, ordered=False)
         }
         return render(request=request, template_name=self.template_name, context=context)
 
@@ -49,12 +49,20 @@ class UserListView(LoginRequiredMixin, ListView):
     model = Nasabah
     template_name = 'nasabah/index.html'
 
-    def get(self, request, *args, **kwargs):
-        context = {
-            'head_title': 'Nasabah',
-            'object_list': self.model.objects.filter(user=request.user)
-        }
-        return render(request=request, template_name=self.template_name, context=context)
+    # def get(self, request, *args, **kwargs):
+    #     context = {
+    #         'head_title': 'Nasabah',
+    #         'object_list': self.model.objects.filter(user=request.user)
+    #     }
+    #     return render(request=request, template_name=self.template_name, context=context)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = 'Nasabah'
+        return context
 
 
 class UserCreateView(LoginRequiredMixin, CreateView):
@@ -65,6 +73,7 @@ class UserCreateView(LoginRequiredMixin, CreateView):
 
     def get(self, request, *args, **kwargs):
         context = {
+            'head_title': 'Tambah nasabah',
             'form': self.form_class()
         }
         return render(request=request, template_name=self.template_name, context=context)
@@ -90,11 +99,15 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['name', 'addres']
     template_name = 'nasabah/detail.html'
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset=queryset)
-        obj.user = self.request.user
-        obj.save()
-        return obj
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = 'Edit Nasabah - {}'.format(
+            context['object'].name)
+        return context
 
 
 class UserDeleteView(LoginRequiredMixin, DeleteView):
@@ -103,18 +116,30 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'nasabah/delete.html'
     success_url = '/users'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = 'Edit Nasabah - {}'.format(
+            context['object'].name)
+        return context
+
 
 class ItemListView(LoginRequiredMixin, ListView):
     login_url = '/login'
     model = Item
     template_name = 'item/index.html'
 
-    def get(self, request, *args, **kwargs):
-        context = {
-            'head_title': 'Barang',
-            'object_list': self.model.objects.filter(user=request.user)
-        }
-        return render(request=request, template_name=self.template_name, context=context)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = 'Barang'
+        return context
 
 
 class ItemUpdateView(LoginRequiredMixin, UpdateView):
@@ -123,14 +148,18 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['name', 'price']
     template_name = 'item/detail.html'
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset=queryset)
-        obj.user = self.request.user
-        obj.save()
-        return obj
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = 'Edit Barang - {}'.format(
+            context.get('object'))
+        return context
 
 
-class ItemCreateView(LoginRequiredMixin, CreateView):
+class ItemCreateView(LoginRequiredMixin, View):
     login_url = '/login'
     model = Item
     form_class = ItemCreateForm
@@ -164,24 +193,29 @@ class ItemDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'item/delete.html'
     success_url = '/items'
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset=queryset)
-        obj.user = self.request.user
-        obj.save()
-        return obj
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = '{} | Hapus Barang'.format(context.get('object'))
+        return context
 
 
 class OrderListView(LoginRequiredMixin, ListView):
     login_url = '/login'
-    model = Order
     template_name = 'order/index.html'
+    paginate_by = 5
 
-    def get(self, request, *args, **kwargs):
-        context = {
-            'head_title': 'Daftar Transaksi',
-            'object_list': self.model.objects.filter(user=request.user)
-        }
-        return render(request=request, template_name=self.template_name, context=context)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = 'Penimbangan'
+        return context
 
 
 class OrderItemView(LoginRequiredMixin, View):
@@ -208,11 +242,16 @@ class OrderItemView(LoginRequiredMixin, View):
         }
         return render(request=request, template_name=self.template_name, context=context)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = 'Penimbangan'
+        return context
+
 
 class OrderCreateView(LoginRequiredMixin, View):
     login_url = '/login'
     model = Order
-    template_name = 'order/index.html'
+    template_name = 'order/create.html'
     form_class = OrderItemCreateForm
 
     def get(self, request, pk, *args, **kwargs):
@@ -232,6 +271,7 @@ class OrderCreateView(LoginRequiredMixin, View):
         else:
             form = OrderItemCreateForm(user=request.user)
         context = {
+            'head_title': 'Penimbangan',
             'form': form
         }
         if not created:
@@ -267,17 +307,20 @@ class OrderDeleteView(LoginRequiredMixin, DeleteView):
     model = Order
     template_name = 'order/delete.html'
     success_url = '/users'
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset=queryset)
-        obj.user = self.request.user
-        obj.save()
-        return obj
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = 'Hapus Order - {}'.format(context.get('nasabah'))
+        return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
 
 
 class OrderSubmitView(LoginRequiredMixin, View):
     login_url = '/login'
-    template_name = 'order/get.html'
+    template_name = 'order/submit.html'
 
     def get(self, request, pk, *args, **kwargs):
         order = get_object_or_404(Order, pk=pk, user=request.user)
