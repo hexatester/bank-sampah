@@ -11,6 +11,7 @@ from .views import (
     ItemUpdateView,
     ItemCreateView,
     ItemDeleteView,
+    OrderListView,
     OrderCreateView,
     OrderDeleteView,
     OrderSubmitView,
