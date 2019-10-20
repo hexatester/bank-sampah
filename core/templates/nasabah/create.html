@@ -1,20 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!--Card-->
-<div class="card mt-2 ml-5">
-	<div class="card-header">
-		Tambah Nasabah
-	</div>
-	<!--Card content-->
-	<div class="card-body">
-		<form method="post">{% csrf_token %}
-			{{ form.as_p }}
-			<input type="submit" class="btn btn-primary" value="Save">
-		</form>
-	</div>
 
+<div class="card-header mt-2 ml-1">
+	Tambah Nasabah
 </div>
-<!--/.Card-->
+<!--Card content-->
+<div class="card-body mt-2 ml-1">
+	<form method="post">{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" class="btn btn-primary" value="Simpan">
+	</form>
+</div>
+
 
 {% endblock content %}

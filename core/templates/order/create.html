@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+
+<div class="card-header mt-2 ml-2">
+	Timbang Barang
+</div>
+
+<div class="card-body ml-2">
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-primary" value="Tambah">
+    </form>
+</div>
+
+<div class="card-footer mt-2 ml-2">
+	Nasabah : <input class="sr-only">{{ order.nasabah }}</input>
+</div>
+
+{% if order.get_sum %}
+<div class="card-header  mt-2 ml-2">
+	Order
+</div>
+
+
+<!-- Table  -->
+<table class="table table-hover">
+	<!-- Table head -->
+	<thead class="blue lighten-4">
+		<tr>
+			<th>Nama</th>
+			<th>Harga</th>
+			<th>Berat</th>
+			<th>Total</th>
+			<th>Hapus</th>
+		</tr>
+	</thead>
+	<!-- Table head -->
+
+	<!-- Table body -->
+	<tbody>
+		{% for orderitem in order.items.all %}
+		<tr>
+			<td>{{ orderitem.item.name }}</td>
+			<td>Rp {{ orderitem.item.price|intcomma }}</td>
+			<td>{{ orderitem.value }} kg</td>
+			<td>Rp {{ orderitem.sum|intcomma }}</td>
+			<td>
+			{% comment %} <form method="get">
+				<input type="hidden" name="update" value="{{ orderitem.pk }}">
+				<input type="submit" class="btn btn-primary" value="Edit">
+			</form> {% endcomment %}
+			<form method="get">
+				<input type="hidden" name="delete" value="{{ orderitem.pk }}">
+				<input type="submit" class="btn badge-danger" value="Hapus">
+			</form>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<!-- Table body -->
+</table>
+<!-- Table  -->
+<div class="card-footer  mt-2 ml-2">
+	Total : Rp {{ order.get_sum|intcomma }}
+	<a href="{{ order.get_set_url }}" class="badge badge-primary">Simpan</a>
+	<a href="{{ order.get_delete_url }}" class="badge badge-danger">Reset / Hapus</a>
+</div>
+{% endif %}
+
+
+{% endblock content %}

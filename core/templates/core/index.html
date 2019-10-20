@@ -81,18 +81,18 @@
 			{% endfor %}
 			{% if order.ordered %}
 			<tr class="table-success">
-				<td>{{ order.nasabah }}</td>
+				<th>{{ order.nasabah }}</th>
 				<th>Selesai</th>
 			{% else %}
 			<tr class="table-danger">
-				<td>{{ order.nasabah }}</td>
+				<th>{{ order.nasabah }}</th>
 				<th>
 				<a href="{{ order.get_absolute_url }}" class="badge badge-primary">Edit</a>
 				</th>
 			{% endif %}
-				<td></td>
-				<td>{{ order.get_values|intcomma }} kg</td>
-				<td>Rp {{ order.get_sum|intcomma }}</td>
+				<th></th>
+				<th>{{ order.get_values|intcomma }} kg</th>
+				<th>Rp {{ order.get_sum|intcomma }}</th>
 			</tr>
 			{% endif %}
 			{% endfor %}

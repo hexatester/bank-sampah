@@ -10,6 +10,7 @@
 	<form method="post">{% csrf_token %}
 		<p>Hapus barang dengan nama "{{ object.name }}"?</p>
 		<p>Semua order dengan barang "{{ object.name }}" akan ikut terhapus!</p>
+		<a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit Barang</a>
 		<input type="submit" class="btn btn-danger" value="YA!">
 	</form>
 </div>

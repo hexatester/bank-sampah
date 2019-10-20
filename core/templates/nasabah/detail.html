@@ -3,26 +3,21 @@
 {% block content %}
 
 
-<!--Card-->
-<div class="card mt-2 ml-5">
-	<div class="card-header">
-		{{ object.name }} <a href="{{ object.get_delete_url }}" class="badge badge-danger">Hapus</a>
-	</div>
-	<!--Card content-->
-	<div class="card-body">
-		<h4>Saldo : Rp {{ object.balance|intcomma }}</h4>
-		<form method="post">{% csrf_token %}
-			{{ form.as_p }}
-			<input type="submit" class="btn btn-primary" value="Update">
-		</form>
-	</div>
-	<div class="card-footer">
-		<h6>Terakhir dilihat : {{ object.timestamp|naturaltime }}</h6>
-		<h6>Dibuat : {{ object.created|naturaltime }}</h6>
-	</div>
-
+<div class="card-header mt-2 ml-2">
+	{{ object.name }} <a href="{{ object.get_delete_url }}" class="badge badge-danger">Hapus</a>
 </div>
-<!--/.Card-->
-
+<!--Card content-->
+<div class="card-body mt-2 ml-2">
+	<h5>Saldo : Rp {{ object.balance|intcomma }}</h5>
+	<form method="post">{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" class="btn btn-primary" value="Update">
+	</form>
+</div>
+<div class="card-footer mt-2 ml-2">
+	<h6>Dibuat oleh : {{ object.user }}</h6>
+	<h6>Dirubah : {{ object.timestamp }}  ({{ object.timestamp|naturaltime }})</h6>
+	<h6>Dibuat : {{ object.created }}  ({{ object.created|naturaltime }})</h6>
+</div>
 
 {% endblock content %}

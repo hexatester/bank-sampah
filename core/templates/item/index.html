@@ -16,6 +16,7 @@
 				<th>id</th>
 				<th>Nama</th>
 				<th>Harga</th>
+				<th>Dirubah</th>
 				<th>Ditambahkan</th>
 			</tr>
 		</thead>
@@ -28,7 +29,8 @@
 				<th scope="row">{{ object.pk }}</th>
 				<td>{{ object.name }} <a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit</a> <a href="{{ object.get_delete_url }}" class="badge badge-danger">Hapus</a></td></td>
 				<td>Rp {{ object.price|intcomma }}</td>
-				<td>{{ object.created|naturaltime }}</td>
+				<td>{{ object.timestamp|naturaltime }}</td>
+				<td>{{ object.created }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>

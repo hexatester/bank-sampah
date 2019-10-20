@@ -17,6 +17,8 @@
 			<th>Saldo</th>
 			<th>Transaksi</th>
 			<th>Alamat</th>
+			<th>Terakhir dirubah</th>
+			<th>Dibuat</th>
 		</tr>
 	</thead>
 	<!-- Table head -->
@@ -30,6 +32,8 @@
 			<td>Rp {{ object.balance|intcomma }}</td>
 			<td><a href="{{ object.get_order_url }}" class="badge badge-success">Tambah</a> <a href="{{ object.get_withdraw_url }}" class="badge badge-danger">Kurang</a></td>
 			<td>{{ object.addres }}</td>
+			<td>{{ object.timestamp|naturaltime }}</td>
+			<td>{{ object.created }}</td>
 		</tr>
 		{% endfor %}
 	</tbody>
