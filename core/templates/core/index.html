@@ -57,7 +57,7 @@
 		<!-- Table head -->
 		<thead class="blue lighten-4">
 			<tr>
-				<th>Nama</th>
+				<th>Nasabah</th>
 				<th>Berat</th>
 				<th>Total</th>
 				<th>Dibuat</th>
@@ -69,7 +69,7 @@
 		<tbody>
 			{% for order in orders %}
 			<tr>
-				<td>{{ order.nasabah }} <a href="{{ order.get_absolute_url }}" class="badge badge-primary">Edit</a></td></td> <a href="{{ object.get_delete_url }}" class="badge badge-danger">Hapus</a></td>
+				<td>{{ order.nasabah }} <a href="{{ order.get_absolute_url }}" class="badge badge-primary">Edit</a> <a href="{{ object.get_delete_url }}" class="badge badge-danger">Hapus</a></td>
 				<td>{{ order.get_values }} kg</td>
 				<td>Rp {{ order.get_sum|intcomma }}</td>
 				<td>{{ order.created|naturaltime}}</td>
