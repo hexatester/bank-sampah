@@ -2,13 +2,19 @@ from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 # Create your models here.
+
+nulls = {
+    'blank': True,
+    'null': True
+}
 
 
 class Nasabah(models.Model):
     name = models.CharField(max_length=64)
-    addres = models.TextField(max_length=126, blank=True, null=True)
+    addres = models.TextField(max_length=126, **nulls)
     balance = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
@@ -32,7 +38,7 @@ class Nasabah(models.Model):
         return reverse("core:order", kwargs={
             'pk': self.pk
         })
-    
+
     def get_withdraw_url(self):
         return reverse("core:withdraw", kwargs={
             'pk': self.pk
@@ -89,8 +95,8 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem)
-    total = models.PositiveIntegerField(null=True, blank=True)
-    sums = models.BooleanField(default=True)
+    total = models.PositiveIntegerField(**nulls)
+    sums = models.BooleanField(default=False)
     ordered = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -101,7 +107,7 @@ class Order(models.Model):
     def delete(self, using=None, keep_parents=False):
         self.items.all().delete()
         return super().delete(using=using, keep_parents=keep_parents)
-    
+
     def get_absolute_url(self):
         return reverse("core:order", kwargs={
             'pk': self.nasabah.pk
@@ -111,7 +117,7 @@ class Order(models.Model):
         return reverse("core:delete_order", kwargs={
             'pk': self.pk
         })
-    
+
     def get_set_url(self):
         return reverse("core:order_set", kwargs={
             'pk': self.pk
@@ -123,11 +129,10 @@ class Order(models.Model):
             sums += item.sum()
         self.total = sums
         return abs(sums)
-    
+
     def get_values(self):
         value = 0
         for item in self.items.all():
             value += abs(item.value)
         self.total = value
         return value
-
