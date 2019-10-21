@@ -40,7 +40,10 @@ INSTALLED_APPS = [
 
     'django.contrib.humanize',
 
-    'core'
+    'core',
+    'item',
+    'nasabah',
+    'order',
 ]
 
 MIDDLEWARE = [
