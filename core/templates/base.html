@@ -32,10 +32,10 @@
 					<a class="nav-link" href="{% url 'core:index' %}">Dashboard</a>
 				</li>
 				<li class="nav-item {% if request.resolver_match.url_name == 'users' %}active{% endif %}">
-					<a class="nav-link" href="{% url 'core:users' %}">Nasabah</a>
+					<a class="nav-link" href="{% url 'nasabah:index' %}">Nasabah</a>
 				</li>
 				<li class="nav-item {% if request.resolver_match.url_name == 'item' %}active{% endif %}">
-					<a class="nav-link" href="{% url 'core:items' %}">Barang</a>
+					<a class="nav-link" href="{% url 'item:index' %}">Barang</a>
 				</li>
 			</ul>
 		</div>

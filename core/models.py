@@ -24,22 +24,22 @@ class Nasabah(models.Model):
         return "{}".format(self.name)
 
     def get_absolute_url(self):
-        return reverse("core:user", kwargs={
+        return reverse("nasabah:view", kwargs={
             'pk': self.pk
         })
 
     def get_delete_url(self):
-        return reverse("core:delete_user", kwargs={
+        return reverse("nasabah:delete", kwargs={
             'pk': self.pk
         })
 
     def get_order_url(self):
-        return reverse("core:order", kwargs={
+        return reverse("order:order", kwargs={
             'pk': self.pk
         })
 
     def get_withdraw_url(self):
-        return reverse("core:withdraw", kwargs={
+        return reverse("nasabah:withdraw", kwargs={
             'pk': self.pk
         })
 
@@ -60,12 +60,12 @@ class Item(models.Model):
         return "{} - {}".format(self.name, self.price)
 
     def get_absolute_url(self):
-        return reverse("core:item", kwargs={
+        return reverse("item:view", kwargs={
             'pk': self.pk
         })
 
     def get_delete_url(self):
-        return reverse("core:delete_item", kwargs={
+        return reverse("item:delete", kwargs={
             'pk': self.pk
         })
 
@@ -108,17 +108,22 @@ class Order(models.Model):
         return super().delete(using=using, keep_parents=keep_parents)
 
     def get_absolute_url(self):
-        return reverse("core:order", kwargs={
+        return reverse("order:order", kwargs={
             'pk': self.nasabah.pk
         })
 
     def get_delete_url(self):
-        return reverse("core:delete_order", kwargs={
+        return reverse("order:delete", kwargs={
+            'pk': self.pk
+        })
+
+    def get_add_url(self):
+        return reverse("order:order", kwargs={
             'pk': self.pk
         })
 
     def get_set_url(self):
-        return reverse("core:order_set", kwargs={
+        return reverse("order:set", kwargs={
             'pk': self.pk
         })
 
