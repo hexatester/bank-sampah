@@ -48,16 +48,12 @@ class UserListView(LoginRequiredMixin, ListView):
     login_url = '/login'
     model = Nasabah
     template_name = 'nasabah/index.html'
+    paginate_by = 10
 
-    # def get(self, request, *args, **kwargs):
-    #     context = {
-    #         'head_title': 'Nasabah',
-    #         'object_list': self.model.objects.filter(user=request.user)
-    #     }
-    #     return render(request=request, template_name=self.template_name, context=context)
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(user=self.request.user)
+        queryset = queryset.filter(user=self.request.user)
+        return queryset.order_by('pk')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -131,10 +127,12 @@ class ItemListView(LoginRequiredMixin, ListView):
     login_url = '/login'
     model = Item
     template_name = 'item/index.html'
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(user=self.request.user)
+        queryset = queryset.filter(user=self.request.user)
+        return queryset.order_by('pk')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -206,7 +204,7 @@ class ItemDeleteView(LoginRequiredMixin, DeleteView):
 class OrderListView(LoginRequiredMixin, ListView):
     login_url = '/login'
     template_name = 'order/index.html'
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset()
