@@ -4,17 +4,18 @@
 
 
 <div class="card-header">
-	Nasabah <a href="{% url 'core:create_user' %}" class="badge badge-success">Tambah</a>
+	Nasabah <a href="{% url 'core:create_user' %}" class="btn btn-success btn-sm">Tambah</a>
 </div>
 
 <!-- Table  -->
-<table class="table table-hover">
+<table class="table table-hover table-responsive table-bordered table-sm">
 	<!-- Table head -->
 	<thead class="blue lighten-4">
 		<tr>
 			<th>id</th>
 			<th>Nama</th>
 			<th>Saldo</th>
+			<th>Menu</th>
 			<th>Transaksi</th>
 			<th>Alamat</th>
 			<th>Terakhir dirubah</th>
@@ -28,9 +29,16 @@
 		{% for object in object_list %}
 		<tr>
 			<th scope="row">{{ object.pk }}</th>
-			<td>{{ object.name }} <a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit</a></td>
+			<td>{{ object.name }}</td>
 			<td>Rp {{ object.balance|intcomma }}</td>
-			<td><a href="{{ object.get_order_url }}" class="badge badge-success">Tambah</a> <a href="{{ object.get_withdraw_url }}" class="badge badge-danger">Kurang</a></td>
+			<td>
+				<div class="btn-group">
+					<a href="{{ object.get_order_url }}" class="btn btn-outline-success btn-sm">Tambah</a>
+					<a href="{{ object.get_withdraw_url }}" class="btn btn-outline-danger btn-sm">Kurang</a>
+				</div>
+				<a href="{{ object.get_absolute_url }}" class="btn btn-outline-primary btn-sm">Edit Nasabah</a>
+			</td>
+			<td></td>
 			<td>{{ object.addres }}</td>
 			<td>{{ object.timestamp|naturaltime }}</td>
 			<td>{{ object.created }}</td>
@@ -40,6 +48,31 @@
 	<!-- Table body -->
 </table>
 <!-- Table  -->
+
+<div class="card-footer">
+	<div >
+	Jumlah : {{ object_list|length }}
+	</div>
+	{% if page_obj %}
+	<br>
+	Halaman
+	<div class="btn-group">
+		{% if page_obj.has_previous %}
+		<a class="btn btn-outline-success btn-sm" href="?page={{ page_obj.previous_page_number }}" class="page-link">Sebelumnya</a>
+		{% endif %}
+		{% for page in page_obj.paginator.page_range %}
+		{% if page == page_obj.number %}
+		<a class="btn btn-outline-success btn-sm active" href="#" class="page-link"> {{ page }}</a>
+		{% else %}
+		<a class="btn btn-outline-success btn-sm" href="?page={{ page }}" class="page-link"> {{ page }}</a>
+		{% endif %}
+		{% endfor %}
+		{% if page_obj.has_next %}	
+		<a class="btn btn-outline-success btn-sm" href="?page={{ page_obj.next_page_number }}" class="page-link">Selanjutnya</a>
+		{% endif %}
+	</div>
+	{% endif %}
+</div>
 
 
 {% endblock content %}

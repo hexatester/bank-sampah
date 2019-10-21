@@ -4,14 +4,14 @@
 
 
 <div class="card-header mt-2 ml-2">
-	{{ object.name }} <a href="{{ object.get_delete_url }}" class="badge badge-danger">Hapus</a>
+	{{ object.name }} <a href="{{ object.get_delete_url }}" class="btn btn-danger btn-sm">Hapus</a>
 </div>
 <!--Card content-->
 <div class="card-body mt-2 ml-2">
 	<h5>Saldo : Rp {{ object.balance|intcomma }}</h5>
 	<form method="post">{% csrf_token %}
 		{{ form.as_p }}
-		<input type="submit" class="btn btn-primary" value="Update">
+		<input type="submit" class="btn btn-primary btn-sm" value="Simpan">
 	</form>
 </div>
 <div class="card-footer mt-2 ml-2">

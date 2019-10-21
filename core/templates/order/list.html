@@ -6,7 +6,7 @@
 
 
 <div class="card-header">
-	Nasabah <a href="{% url 'core:create_user' %}" class="badge badge-success">Tambah</a>
+	Nasabah <a href="{% url 'core:create_user' %}" class="btn btn-success btn-sm">Tambah</a>
 </div>
 <!--Card content-->
 <div class="card-body">
@@ -29,7 +29,12 @@
 			<tr>
 				<td>{{ object.name }} <a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit</a></td>
 				<td>Rp {{ object.balance|intcomma }}</td>
-				<td><a href="{{ object.get_order_url }}" class="badge badge-success">Tambah</a> <a href="{{ object.get_withdraw_url }}" class="badge badge-danger">Kurang</a></td>
+				<td>
+					<div class="btn-group">
+						<a href="{{ object.get_order_url }}" class="badge badge-success">Tambah</a>
+						<a href="{{ object.get_withdraw_url }}" class="badge badge-danger">Kurang</a>
+					</div>
+				</td>
 				<td>{{ object.addres }}</td>
 			</tr>
 			{% endfor %}

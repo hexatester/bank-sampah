@@ -8,7 +8,7 @@
 {% for order in object_list %}
 
 <!-- Table  -->
-<table class="table table-hover">
+<table class="table table-hover table-responsive table-bordered table-sm">
 	<!-- Table head -->
 	<thead class="blue lighten-4">
 		<tr>
@@ -30,13 +30,9 @@
 			<td>{{ orderitem.value }} kg</td>
 			<td>Rp {{ orderitem.sum|intcomma }}</td>
 			<td>
-			{% comment %} <form method="get">
-				<input type="hidden" name="update" value="{{ orderitem.pk }}">
-				<input type="submit" class="btn btn-primary" value="Edit">
-			</form> {% endcomment %}
 			<form method="get">
 				<input type="hidden" name="delete" value="{{ orderitem.pk }}">
-				<input type="submit" class="btn badge-danger" value="Hapus">
+				<input type="submit" class="btn btn-danger btn-sm" value="Hapus">
 			</form>
 			</td>
 		</tr>

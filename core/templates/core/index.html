@@ -4,32 +4,39 @@
 
 {% if nasabah_list %}
 
-
+	
 <div class="card-header">
-	Nasabah <a href="{% url 'core:create_user' %}" class="badge badge-success">Tambah</a>
+	Nasabah <a href="{% url 'core:create_user' %}" class="btn btn-success btn-sm">Tambah</a>
 </div>
 <!--Card content-->
 <div class="card-body">
 	<!-- Table  -->
-	<table class="table table-hover">
+	<table class="table table-hover table-responsive table-bordered table-sm">
 		<!-- Table head -->
 		<thead class="blue lighten-4">
 			<tr>
 				<th>Nama</th>
 				<th>Saldo</th>
+				<th>Menu</th>
 				<th>Transaksi</th>
 				<th>Alamat</th>
 			</tr>
 		</thead>
 		<!-- Table head -->
-
+		
 		<!-- Table body -->
 		<tbody>
 			{% for object in nasabah_list %}
 			<tr>
-				<td>{{ object.name }} <a href="{{ object.get_absolute_url }}" class="badge badge-primary">Edit</a></td>
+				<td>{{ object.name }}</td>
 				<td>Rp {{ object.balance|intcomma }}</td>
-				<td><a href="{{ object.get_order_url }}" class="badge badge-success">Tambah</a> <a href="{{ object.get_withdraw_url }}" class="badge badge-danger">Kurang</a></td>
+				<td><a href="{{ object.get_absolute_url }}" class="btn btn-outline-primary btn-sm mr-auto">Edit</a></td>
+				<td>
+					<div class="btn-group">
+						<a href="{{ object.get_order_url }}" class="btn btn-outline-success btn-sm">Tambah</a>
+						<a href="{{ object.get_withdraw_url }}" class="btn btn-outline-danger btn-sm">Kurang</a>
+					</div>
+				</td>
 				<td>{{ object.addres }}</td>
 			</tr>
 			{% endfor %}
@@ -37,7 +44,7 @@
 		<!-- Table body -->
 	</table>
 	<!-- Table  -->
-
+	
 </div>
 
 {% endif %}
@@ -53,13 +60,14 @@
 <div class="card-body">
 
 	<!-- Table  -->
-	<table class="table table-hover">
+	<table class="table table-hover table-responsive table-bordered table-sm">
 		<!-- Table head -->
 		<thead class="blue lighten-4">
 			<tr>
-				<th>Nasabah</th>
+				<th>Nama</th>
 				<th>Berat</th>
 				<th>Total</th>
+				<th>Menu</th>
 				<th>Dibuat</th>
 			</tr>
 		</thead>
@@ -69,9 +77,15 @@
 		<tbody>
 			{% for order in orders %}
 			<tr>
-				<td>{{ order.nasabah }} <a href="{{ order.get_absolute_url }}" class="badge badge-primary">Edit</a> <a href="{{ object.get_delete_url }}" class="badge badge-danger">Hapus</a></td>
+				<td>{{ order.nasabah }}</td>
 				<td>{{ order.get_values }} kg</td>
 				<td>Rp {{ order.get_sum|intcomma }}</td>
+				<td>
+					<div class="btn-group">
+						<a href="{{ order.get_absolute_url }}" class="btn btn-outline-primary btn-sm">Edit</a>
+						<a href="{{ object.get_delete_url }}" class="btn btn-outline-danger btn-sm">Hapus</a>
+					</div>
+				</td>
 				<td>{{ order.created|naturaltime}}</td>
 			</tr>
 			{% endfor %}

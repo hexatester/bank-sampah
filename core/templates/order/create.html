@@ -3,36 +3,36 @@
 {% block content %}
 
 <div class="card-header mt-2 ml-2">
-	Timbang Barang
+	Penimbangan
 </div>
 
 <div class="card-body ml-2">
     <form method="post">{% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" class="btn btn-primary" value="Tambah">
+		<input type="submit" class="btn btn-primary btn-sm" value="Tambah">
     </form>
 </div>
 
 <div class="card-footer mt-2 ml-2">
-	Nasabah : <input class="sr-only">{{ order.nasabah }}</input>
+	Nasabah : <b>{{ order.nasabah }}</b>
 </div>
 
 {% if order.get_sum %}
 <div class="card-header  mt-2 ml-2">
-	Order
+	Hasil Penimbangan
 </div>
 
 
 <!-- Table  -->
-<table class="table table-hover">
+<table class="table table-hover table-responsive table-bordered table-sm">
 	<!-- Table head -->
 	<thead class="blue lighten-4">
 		<tr>
 			<th>Nama</th>
 			<th>Harga</th>
 			<th>Berat</th>
-			<th>Total</th>
-			<th>Hapus</th>
+			<th>Jumlah</th>
+			<th>Menu</th>
 		</tr>
 	</thead>
 	<!-- Table head -->
@@ -46,13 +46,9 @@
 			<td>{{ orderitem.value }} kg</td>
 			<td>Rp {{ orderitem.sum|intcomma }}</td>
 			<td>
-			{% comment %} <form method="get">
-				<input type="hidden" name="update" value="{{ orderitem.pk }}">
-				<input type="submit" class="btn btn-primary" value="Edit">
-			</form> {% endcomment %}
 			<form method="get">
 				<input type="hidden" name="delete" value="{{ orderitem.pk }}">
-				<input type="submit" class="btn badge-danger" value="Hapus">
+				<input type="submit" class="btn btn-outline-danger btn-sm" value="Hapus">
 			</form>
 			</td>
 		</tr>
@@ -63,8 +59,10 @@
 <!-- Table  -->
 <div class="card-footer  mt-2 ml-2">
 	Total : Rp {{ order.get_sum|intcomma }}
-	<a href="{{ order.get_set_url }}" class="badge badge-primary">Simpan</a>
-	<a href="{{ order.get_delete_url }}" class="badge badge-danger">Reset / Hapus</a>
+	<div class="btn-group">
+		<a href="{{ order.get_set_url }}" class="btn btn-primary btn-sm">Simpan</a>
+		<a href="{{ order.get_delete_url }}" class="btn btn-danger btn-sm">Reset / Hapus</a>
+	</div>
 </div>
 {% endif %}
 
