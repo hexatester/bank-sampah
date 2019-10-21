@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from core.models import (
     Nasabah,
@@ -116,14 +117,16 @@ class OrderCreateView(LoginRequiredMixin, View):
             orders.save()
         orders.items.add(order_item)
         orders.save()
+        messages.success(request, f'Penimbangan "{order_item}" berhasil ditambahkan')
         return True
 
 
-class OrderDeleteView(LoginRequiredMixin, DeleteView):
+class OrderDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     login_url = '/login'
     model = Order
+    success_message = 'Penimbangan %(nasabah)s dihapus'
     template_name = 'order/delete.html'
-    success_url = '/user'
+    success_url = '/nasabah'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -151,13 +154,15 @@ class OrderSubmitView(LoginRequiredMixin, View):
         order = get_object_or_404(Order, pk=pk, user=request.user)
         form = OrderSubmitForm(request.POST, instance=order)
         if form.is_valid():
+            order = form.save(commit=False)
             if form.cleaned_data['sums']:
-                order = form.save(commit=False)
-                order.ordered = True
+                order.ordered, order.total = True, order.get_sum()
                 nasabah = order.nasabah
                 nasabah.add_balance(order.get_sum())
                 nasabah.save()
+                messages.success(request, f'Saldo {nasabah} berhasil ditambah Rp. {order.get_sum()}')
             else:
                 order.total = order.get_sum()
             order.save()
         return HttpResponseRedirect('/')
+

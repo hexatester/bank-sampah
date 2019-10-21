@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from core.models import (
     Nasabah,
@@ -34,11 +35,12 @@ class ItemListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ItemUpdateView(LoginRequiredMixin, UpdateView):
+class ItemUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     login_url = '/login'
     model = Item
-    fields = ['name', 'price']
+    form_class = ItemCreateForm
     template_name = 'item/detail.html'
+    success_message = 'Barang "%(name)s" berhasil diupdate'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -51,11 +53,12 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class ItemCreateView(LoginRequiredMixin, View):
+class ItemCreateView(LoginRequiredMixin, SuccessMessageMixin, View):
     login_url = '/login'
     model = Item
     form_class = ItemCreateForm
     template_name = 'item/create.html'
+    success_message = 'Barang "%(name)s" berhasil ditambahkan'
 
     def get(self, request, *args, **kwargs):
         context = {
@@ -69,7 +72,7 @@ class ItemCreateView(LoginRequiredMixin, View):
             item = form.save(commit=False)
             item.user = request.user
             item.save()
-            return HttpResponseRedirect(reverse("core:item", kwargs={
+            return HttpResponseRedirect(reverse("item:view", kwargs={
                 'pk': item.pk
             }))
         context = {
@@ -79,10 +82,11 @@ class ItemCreateView(LoginRequiredMixin, View):
         return render(request=request, template_name=self.template_name, context=context)
 
 
-class ItemDeleteView(LoginRequiredMixin, DeleteView):
+class ItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     login_url = '/login'
     model = Item
     template_name = 'item/delete.html'
+    success_message = 'Barang "%(name)s" berhasil dihapus'
     success_url = '/item'
 
     def get_queryset(self):

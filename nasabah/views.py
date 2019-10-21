@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, reverse
-from django.contrib import messages
+from django.contrib import messages, humanize
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from core.models import (
     Nasabah,
@@ -34,10 +34,11 @@ class UserListView(LoginRequiredMixin, ListView):
         return context
 
 
-class UserCreateView(LoginRequiredMixin, CreateView):
+class UserCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     login_url = '/login'
     model = Nasabah
     form_class = NasabahCreateForm
+    success_message = 'Nasabah %(name)s berhasil ditambahkan'
     template_name = 'nasabah/create.html'
 
     def get(self, request, *args, **kwargs):
@@ -53,6 +54,7 @@ class UserCreateView(LoginRequiredMixin, CreateView):
             nasabah = form.save(commit=False)
             nasabah.user = request.user
             nasabah.save()
+            messages.success(request, f"Nasabah {nasabah.name} berhasil ditambahkan")
             return HttpResponseRedirect(reverse("nasabah:view", kwargs={
                 'pk': nasabah.pk
             }))
@@ -62,10 +64,11 @@ class UserCreateView(LoginRequiredMixin, CreateView):
         return render(request=request, template_name=self.template_name, context=context)
 
 
-class UserUpdateView(LoginRequiredMixin, UpdateView):
+class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     login_url = '/login'
     model = Nasabah
-    fields = ['name', 'addres']
+    form_class = NasabahCreateForm
+    success_message = 'Perubahan data nasabah %(name)s disimpan'
     template_name = 'nasabah/detail.html'
 
     def get_queryset(self):
@@ -79,9 +82,10 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class UserDeleteView(LoginRequiredMixin, DeleteView):
+class UserDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     login_url = '/login'
     model = Nasabah
+    success_message = 'Nasabah %(name)s berhasil dihapus'
     template_name = 'nasabah/delete.html'
     success_url = '/nasabah'
 
@@ -115,8 +119,12 @@ class WithdrawView(LoginRequiredMixin, View):
         form = self.forms(request.POST)
         if form.is_valid():
             if form.cleaned_data.get('value') <= nasabah.balance:
-                nasabah.balance -= form.cleaned_data.get('value')
+                val = form.cleaned_data.get('value')
+                nasabah.balance -= val
                 nasabah.save()
+                messages.success(request, f'Saldo {nasabah.name} berhasil dikurangi sebesar Rp {val}')
+            else:
+                messages.warning(request, f'Saldo {nasabah.name} tidak mencukupi')
         context = {
             'head_title': 'Kurangi Saldo',
             'nasabah': nasabah,
