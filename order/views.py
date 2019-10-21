@@ -20,12 +20,14 @@ from .forms import (
 
 class OrderListView(LoginRequiredMixin, ListView):
     login_url = '/login'
+    model = Order
     template_name = 'order/index.html'
     paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(user=self.request.user)
+        queryset = queryset.filter(user=self.request.user)
+        return queryset.queryset.order_by('pk')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

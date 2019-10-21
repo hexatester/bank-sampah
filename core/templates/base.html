@@ -28,13 +28,13 @@
 			href="{% url 'core:logout' %}">Keluar</a>
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav">
-				<li class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+				<li class="nav-item {% if request.resolver_match.view_name == 'core' %}active{% endif %}">
 					<a class="nav-link" href="{% url 'core:index' %}">Dashboard</a>
 				</li>
-				<li class="nav-item {% if request.resolver_match.url_name == 'users' %}active{% endif %}">
+				<li class="nav-item {% if request.resolver_match.view_name == 'nasabah' %}active{% endif %}">
 					<a class="nav-link" href="{% url 'nasabah:index' %}">Nasabah</a>
 				</li>
-				<li class="nav-item {% if request.resolver_match.url_name == 'item' %}active{% endif %}">
+				<li class="nav-item {% if request.resolver_match.view_name == 'item' %}active{% endif %}">
 					<a class="nav-link" href="{% url 'item:index' %}">Barang</a>
 				</li>
 			</ul>
