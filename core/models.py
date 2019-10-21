@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
 from django.core.validators import MinValueValidator
-from django.utils import timezone
 
 # Create your models here.
 
