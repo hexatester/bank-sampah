@@ -76,6 +76,7 @@
 		<!-- Table body -->
 		<tbody>
 			{% for order in orders %}
+			{% if order.items.all|length > 0 %}
 			<tr>
 				<td>{{ order.nasabah }}</td>
 				<td>{{ order.get_values }} kg</td>
@@ -88,6 +89,7 @@
 				</td>
 				<td>{{ order.created|naturaltime}}</td>
 			</tr>
+			{% endif %}
 			{% endfor %}
 		</tbody>
 		<!-- Table body -->

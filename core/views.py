@@ -47,7 +47,7 @@ class PasswordChangeView(LoginRequiredMixin, View):
             'head_title': "Ubah Password",
             'form': PasswordChangeForm()
             }
-        return render(request=request, template_name=self.template_name, context=contex)
+        return render(request=request, template_name=self.template_name, context=context)
 
     def post(self, request, *args, **kwargs):
         form = PasswordChangeForm(request.user, request.POST)
@@ -60,4 +60,4 @@ class PasswordChangeView(LoginRequiredMixin, View):
             'form': PasswordChangeForm()
             }
         messages.warning(request, 'Passwrd gagal dirubah')
-        return render(request=request, template_name=self.template_name, context=contex) 
+        return render(request=request, template_name=self.template_name, context=context) 

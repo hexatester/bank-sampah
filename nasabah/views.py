@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, reverse
 from django.contrib import messages, humanize
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
@@ -18,11 +18,8 @@ from .forms import (
 
 
 class BaseView(LoginRequiredMixin):
-    login_url = '/login'
-
-
-class GenericView(LoginRequiredMixin):
     name = ''
+    login_url = '/login'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -33,8 +30,11 @@ class GenericView(LoginRequiredMixin):
         context['head_title'] = self.name
         return context
 
+    def render(self, context: dict, *args, **kwargs):
+        return render(request=self.request, template_name=self.template_name, context=context, *args, **kwargs)
 
-class UserListView(GenericView, ListView):
+
+class UserListView(BaseView, ListView):
     name = 'Nasabah'
     model = Nasabah
     template_name = 'nasabah/index.html'
@@ -45,9 +45,8 @@ class UserListView(GenericView, ListView):
         return queryset.order_by('pk')
 
 
-class UserCreateView(GenericView, SuccessMessageMixin, CreateView):
+class UserCreateView(BaseView, SuccessMessageMixin, CreateView):
     name = 'Tambah Nasabah'
-    login_url = '/login'
     model = Nasabah
     form_class = NasabahCreateForm
     success_message = 'Nasabah %(name)s berhasil ditambahkan'
@@ -58,15 +57,16 @@ class UserCreateView(GenericView, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class UserUpdateView(GenericView, SuccessMessageMixin, UpdateView):
-    name = 'Edit Nasabah'
+class UserUpdateView(BaseView, SuccessMessageMixin, UpdateView):
+    name = 'Update Nasabah'
     model = Nasabah
     form_class = NasabahCreateForm
     success_message = 'Perubahan data nasabah %(name)s disimpan'
     template_name = 'nasabah/detail.html'
 
 
-class UserDeleteView(GenericView, SuccessMessageMixin, DeleteView):
+class UserDeleteView(BaseView, SuccessMessageMixin, DeleteView):
+    name = 'Hapus Nasabah'
     model = Nasabah
     success_message = 'Nasabah %(name)s berhasil dihapus'
     template_name = 'nasabah/delete.html'
@@ -79,8 +79,7 @@ class UserDeleteView(GenericView, SuccessMessageMixin, DeleteView):
         return context
 
 
-class WithdrawView(LoginRequiredMixin, View):
-    login_url = '/login'
+class WithdrawView(BaseView, View):
     model = Nasabah
     template_name = 'nasabah/withdraw.html'
     forms = WithdrawForm
@@ -91,7 +90,7 @@ class WithdrawView(LoginRequiredMixin, View):
             'nasabah': get_object_or_404(Nasabah, pk=pk, user=request.user),
             'form': self.forms()
         }
-        return render(request=request, template_name=self.template_name, context=context)
+        return self.render(context=context)
 
     def post(self, request, pk, *args, **kwargs):
         nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
@@ -111,4 +110,4 @@ class WithdrawView(LoginRequiredMixin, View):
             'nasabah': nasabah,
             'form': self.forms()
         }
-        return render(request=request, template_name=self.template_name, context=context)
+        return self.render(context=context)
