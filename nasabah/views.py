@@ -17,81 +17,60 @@ from .forms import (
 # Create your views here.
 
 
-class UserListView(LoginRequiredMixin, ListView):
+class BaseView(LoginRequiredMixin):
     login_url = '/login'
+
+
+class GenericView(LoginRequiredMixin):
+    name = ''
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['head_title'] = self.name
+        return context
+
+
+class UserListView(GenericView, ListView):
+    name = 'Nasabah'
     model = Nasabah
     template_name = 'nasabah/index.html'
     paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(user=self.request.user)
         return queryset.order_by('pk')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['head_title'] = 'Nasabah'
-        return context
 
 
-class UserCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class UserCreateView(GenericView, SuccessMessageMixin, CreateView):
+    name = 'Tambah Nasabah'
     login_url = '/login'
     model = Nasabah
     form_class = NasabahCreateForm
     success_message = 'Nasabah %(name)s berhasil ditambahkan'
     template_name = 'nasabah/create.html'
 
-    def get(self, request, *args, **kwargs):
-        context = {
-            'head_title': 'Tambah nasabah',
-            'form': self.form_class()
-        }
-        return render(request=request, template_name=self.template_name, context=context)
-
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            nasabah = form.save(commit=False)
-            nasabah.user = request.user
-            nasabah.save()
-            messages.success(request, f"Nasabah {nasabah.name} berhasil ditambahkan")
-            return HttpResponseRedirect(reverse("nasabah:view", kwargs={
-                'pk': nasabah.pk
-            }))
-        context = {
-            'form': form
-        }
-        return render(request=request, template_name=self.template_name, context=context)
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
-class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    login_url = '/login'
+class UserUpdateView(GenericView, SuccessMessageMixin, UpdateView):
+    name = 'Edit Nasabah'
     model = Nasabah
     form_class = NasabahCreateForm
     success_message = 'Perubahan data nasabah %(name)s disimpan'
     template_name = 'nasabah/detail.html'
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(user=self.request.user)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['head_title'] = 'Edit Nasabah - {}'.format(
-            context['object'].name)
-        return context
-
-
-class UserDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
-    login_url = '/login'
+class UserDeleteView(GenericView, SuccessMessageMixin, DeleteView):
     model = Nasabah
     success_message = 'Nasabah %(name)s berhasil dihapus'
     template_name = 'nasabah/delete.html'
     success_url = '/nasabah'
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(user=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -122,13 +101,14 @@ class WithdrawView(LoginRequiredMixin, View):
                 val = form.cleaned_data.get('value')
                 nasabah.balance -= val
                 nasabah.save()
-                messages.success(request, f'Saldo {nasabah.name} berhasil dikurangi sebesar Rp {val}')
+                messages.success(
+                    request, f'Saldo {nasabah.name} berhasil dikurangi sebesar Rp {val}')
             else:
-                messages.warning(request, f'Saldo {nasabah.name} tidak mencukupi')
+                messages.warning(
+                    request, f'Saldo {nasabah.name} tidak mencukupi')
         context = {
             'head_title': 'Kurangi Saldo',
             'nasabah': nasabah,
             'form': self.forms()
         }
         return render(request=request, template_name=self.template_name, context=context)
-
