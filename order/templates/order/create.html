@@ -2,27 +2,26 @@
 {% load humanize %}
 {% block content %}
 
-<div class="card-header mt-2 ml-2">
+<div class="card-header mt-2">
 	Penimbangan
 </div>
 
-<div class="card-body ml-2">
+<div class="card-body" id="f">
     <form method="post">{% csrf_token %}
         {{ form.as_p }}
 		<input type="submit" class="btn btn-primary btn-sm" value="Tambah">
     </form>
 </div>
 
-<div class="card-footer mt-2 ml-2">
+<div class="card-footer">
 	Nasabah : <b>{{ order.nasabah }}</b>
 </div>
 
-{% if order.get_sum %}
-<div class="card-header  mt-2 ml-2">
+<div class="card-header  mt-2">
 	Hasil Penimbangan
 </div>
 
-
+{% if order.get_total > 0 %}
 <!-- Table  -->
 <table class="table table-hover table-responsive table-bordered table-sm">
 	<!-- Table head -->
@@ -57,14 +56,46 @@
 	<!-- Table body -->
 </table>
 <!-- Table  -->
-<div class="card-footer  mt-2 ml-2">
-	Total : Rp {{ order.get_sum|intcomma }}
+{% else %}
+<div class="card-body">
+	<p>Belum ada data</p>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Error</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	Tidak dapat menyimpan, karena total Rp {{ order.get_total|intcomma }}.
+      </div>
+      <div class="modal-footer">
 	<div class="btn-group">
-		<a href="{{ order.get_set_url }}" class="btn btn-primary btn-sm">Simpan</a>
-		<a href="{{ order.get_delete_url }}" class="btn btn-danger btn-sm">Reset / Hapus</a>
+        	<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+		<a href="{{ order.get_delete_url }}" class="btn btn-danger btn-sm">Hapus Penimbangan</a>
 	</div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endif %}
-
+<div class="card-footer">
+	Total : Rp {{ order.get_total|intcomma }}
+	<br>
+	Berat : {{ order.get_weigth|intcomma }} kg
+	<br>
+	<div class="btn-group">
+		{% if order.get_total > 0 %}
+		<a href="{{ order.get_set_url }}" class="btn btn-primary btn-sm">Simpan</a>
+		{% else %}
+		<a href="#" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#modal">Simpan</a>
+		{% endif %}
+		<a href="{{ order.get_delete_url }}" class="btn btn-danger btn-sm">Hapus Penimbangans</a>
+	</div>
+</div>
 
 {% endblock content %}

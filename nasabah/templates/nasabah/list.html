@@ -29,7 +29,8 @@
 {% else %}                                                                                           <div class="card-body">
         <p>Belum ada Data Nasabah </p>
 </div>                                                                                               {% endif %}
-<div class="card-footer">                                                                                    <div >                                                                                               Jumlah : {{ object_list|length }} nasabah                                                            </div>                                                                                               {% if page_obj %}                                                                                    <br>
+<div class="card-footer">                                                                                    <div >                                                                                               Jumlah Nasabah : {{ count }} nasabah
+	</div>                                                                                               {% if page_obj %}                                                                                    <br>
         Halaman
         <div class="btn-group">
                 {% if page_obj.has_previous %}

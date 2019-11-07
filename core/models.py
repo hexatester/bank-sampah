@@ -1,7 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -9,6 +12,32 @@ nulls = {
     'blank': True,
     'null': True
 }
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    balance = models.PositiveIntegerField(default=0)
+    weight = models.PositiveIntegerField(default=0)
+    timezone = models.CharField(default="Asia/Jakarta", max_length=64)
+    timestamp = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+    def tz(self):
+        return self.timezone
+
+    def add_balance(self, value: int):
+        if value > 0:
+            self.balance += value
+            return True
+        return False
+
+    def add_weight(self, value: int):
+        if value > 0:
+            self.balance += value
+            return True
+        return False
 
 
 class Nasabah(models.Model):
@@ -81,6 +110,11 @@ class OrderItem(models.Model):
     def __str__(self):
         return "{} x {} kg".format(self.item, self.value)
 
+    def get_delete_url(self):
+        return reverse("order:delete_item", kwargs={
+            "pk": self.pk
+        })
+
     def get_sum(self):
         return abs(self.item.price*self.value)
 
@@ -94,6 +128,7 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem)
+    weigth = models.PositiveIntegerField(**nulls)
     total = models.PositiveIntegerField(**nulls)
     sums = models.BooleanField(default=False)
     ordered = models.BooleanField(default=False)
@@ -127,16 +162,28 @@ class Order(models.Model):
             'pk': self.pk
         })
 
-    def get_sum(self):
+    def get_total(self):
         sums = 0
         for item in self.items.all():
             sums += item.sum()
         self.total = sums
         return abs(sums)
 
-    def get_values(self):
-        value = 0
+    def get_weigth(self):
+        sums = 0
         for item in self.items.all():
-            value += abs(item.value)
-        self.total = value
-        return value
+            sums += abs(item.value)
+        self.weigth = sums
+        return sums
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
+# EOF
+

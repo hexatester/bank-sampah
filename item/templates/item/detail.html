@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load humanize %}
+{% load humanize tz %}
 {% block content %}
 
 
@@ -14,8 +14,8 @@
 	</form>
 </div>
 <div class="card-footer">
-	<h6>Terakhir dirubah : {{ object.timestamp|naturaltime }}</h6>
-	<h6>Dibuat : {{ object.created|naturaltime }}</h6>
+	<h6>Dirubah : {{ object.timestamp|timezone:user.profile.timezone }} ({{ object.timestamp|naturaltime }})</h6>
+	<h6>Dibuat : {{ object.created|timezone:user.profile.timezone }} ({{ object.created|naturaltime }})</h6>
 </div>
 
 

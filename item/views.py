@@ -42,6 +42,11 @@ class ItemListView(BaseView, ListView):
         queryset = super().get_queryset()
         return queryset.order_by('pk')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['count'] = Item.objects.filter(user=self.request.user).count()
+        return context
+
 
 class ItemUpdateView(BaseView, SuccessMessageMixin, UpdateView):
     name = 'Edit Barang'

@@ -12,7 +12,7 @@ class OrderItemCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(OrderItemCreateForm, self).__init__(*args, **kwargs)
-        self.fields['item'].queryset = Item.objects.filter(user=user)
+        self.fields['item'].queryset = Item.objects.filter(user=user).order_by("name")
 
     class Meta:
         model = OrderItem
@@ -37,6 +37,9 @@ class OrderSubmitForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['sums']
+        label = {
+            'sums': _('Tambah'),
+        }
         help_texts = {
             'sums': _('Tambahkan ke saldo?'),
         }

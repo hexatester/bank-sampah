@@ -43,31 +43,23 @@ class OrderListView(BaseView, ListView):
         queryset = super().get_queryset()
         return queryset.order_by('-created')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['count'] = Order.objects.filter(user=self.request.user).count()
+        return context
 
-class OrderItemView(BaseView, DetailView):
-    name = 'Penimbangan'
-    model = Order
-    template_name = ''
 
-    def get(self, request, pk, *args, **kwargs):
-        nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
-        order = get_object_or_404(
-            Order, user=request.user, nasabah=nasabah, ordered=False)
-        context = {
-            'order': order
-        }
-        return render(request=request, template_name=self.template_name, context=context)
+class OrderItemDeleteView(BaseView, DeleteView):
+    name = 'Hapus'
+    model = OrderItem
+    template_name = 'order/delete_order_item.html'
 
-    def post(self, request, pk, *args, **kwargs):
-        nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
-        order = get_object_or_404(
-            Order, user=request.user, nasabah=nasabah, ordered=False)
-        context = {
-            'order': order,
-            'nasabah': nasabah,
-            'items': Item.objects.filter(user=request.user)
-        }
-        return render(request=request, template_name=self.template_name, context=context)
+    def get_success_url(self):
+        return self.object.order_set.first().get_set_url()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user)
 
 
 class OrderCreateView(LoginRequiredMixin, View):
@@ -110,17 +102,17 @@ class OrderCreateView(LoginRequiredMixin, View):
         form = self.form_class(request.POST, user=request.user)
         if not form.is_valid():
             return False
+        order, created = Order.objects.get_or_create(
+            user=request.user, nasabah=nasabah, ordered=False
+        )
         order_item = form.save(commit=False)
         order_item.nasabah = nasabah
         order_item.user = request.user
         order_item.save()
-        orders, created = Order.objects.get_or_create(
-            user=request.user, nasabah=nasabah, ordered=False
-        )
         if created:
-            orders.save()
-        orders.items.add(order_item)
-        orders.save()
+            order.save()
+        order.items.add(order_item)
+        order.save()
         messages.success(
             request, f'Penimbangan "{order_item}" berhasil ditambahkan')
         return True
@@ -147,15 +139,15 @@ class OrderSubmitView(BaseView, UpdateView):
         order = form.save(commit=False)
         nasabah = order.nasabah
         if form.cleaned_data['sums']:
-            order.ordered, order.total = True, order.get_sum()
-            nasabah.add_balance(order.get_sum())
+            order.ordered, order.total, order.weigth = True, order.get_total(), order.get_weigth()
+            nasabah.add_balance(order.total)
             nasabah.save()
             messages.success(
-                self.request, f'Saldo {nasabah} berhasil ditambah Rp. {order.get_sum()}')
+                self.request, f'Saldo {nasabah} berhasil ditambah Rp. {order.total}')
         else:
-            order.ordered, order.total = True, order.get_sum()
+            order.ordered, order.total = True, order.get_total()
             messages.warning(
-                self.request, f'Gagal menambah saldo {nasabah}')
+                self.request, f'Berhasil menyimpan penimbangan {nasabah}')
         order.save()
         return super().form_valid(form)
 

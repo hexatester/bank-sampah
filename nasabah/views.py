@@ -44,6 +44,11 @@ class UserListView(BaseView, ListView):
         queryset = super().get_queryset()
         return queryset.order_by('pk')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['count'] = Nasabah.objects.filter(user=self.request.user).count()
+        return context
+
 
 class UserCreateView(BaseView, SuccessMessageMixin, CreateView):
     name = 'Tambah Nasabah'
