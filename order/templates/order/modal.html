@@ -1,0 +1,50 @@
+{% load humanize tz %}
+<!-- Modal -->                                                                                       <div class="modal fade" id="modal{{ order.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">                                                                        <div class="modal-dialog" role="document">                                                             <div class="modal-content">                                                                            <div class="modal-header">                                                                             <h5 class="modal-title" id="exampleModalLabel">Detail Penimbangan #{{ order.pk }}</h5>               <button type="button" class="close" data-dismiss="modal" aria-label="Close">                           <span aria-hidden="true">&times;</span>                                                            </button>                                                                                          </div>                                                                                               <div class="modal-body">                                                                               <p>                                                                                                  Nama    : {{ order.nasabah }}                                                                        <br>
+	{% if order.ordered %}
+	Total   : Rp {{ order.total|intcomma }}                                                              <br>
+	Berat : {{ order.weigth|intcomma }} kg
+	<br>
+	{% if order.sums %}                                                                                  Ditambahkan : Ya                                                                                     {% else %}                                                                                           Ditambahkan : Tidak                                                                                  {% endif %}
+	{% else %}
+	Total   : Rp {{ order.get_total|intcomma }}
+	<br>
+	Berat : {{ order.get_weigth|intcomma }} kg
+	{% endif %}
+	</p>                                                                                                 <table class="table table-hover table-bordered">                                                     <!-- Table head -->                                                                                  <thead class="blue lighten-4">
+		<th>id</th>                                                                                          <th>Barang</th>                                                                                      <th>Harga</th>                                                                                       <th>Berat</th>                                                                                       <th>Jumlah</th>
+		{% if not order.ordered %}
+		<th>Hapus</th>
+		{% endif %}
+	</thead>                                                                                             <!-- Table head -->                                                                                  <!-- Table body -->
+	<tbody>                                                                                                      {% for order_item in order.items.all %}                                                              <tr>                                                                                                         <td>{{ order_item.pk }}</td>                                                                         <td>{{ order_item.item.name }}</td>                                                                  <td>Rp {{ order_item.item.price|intcomma }}</td>
+                        <td>{{ order_item.value }} kg</td>
+			{% if not order.ordered %}
+                        <td>Rp {{ order_item.sum|intcomma }}</td>
+			<td>
+				<form method="post" action="{{ order_item.get_delete_url }}">
+					{% csrf_token %}
+					<button type="submit" class="btn btn-outline-danger btn-sm">Hapus</button>
+				</form>
+			</td>
+			{% else %}
+			<td>Rp {{ order_item.total|intcomma }}</td>
+			{% endif %}
+                </tr>
+                {% endfor %}
+        </tbody>
+        <!-- Table body -->
+        </table>
+      </div>
+      <div class="modal-footer">
+	<div class="btn-group">
+		{% if not order.ordered %}
+		<a href="{{ order.get_absolute_url }}" class="btn btn-primary">Edit</a>
+		<a href="{{ order.get_set_url }}" class="btn btn-success">Simpan</a>
+		{% endif %}
+		<a href="{{ order.get_delete_url }}" class="btn btn-danger">Hapus</a>
+        	<button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+	</div>
+      </div>
+    </div>
+  </div>
+</div
