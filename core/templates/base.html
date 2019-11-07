@@ -39,6 +39,9 @@
 				<li class="nav-item {% if request.resolver_match.view_name == 'item' %}active{% endif %}">
 					<a class="nav-link" href="{% url 'item:index' %}">Barang</a>
 				</li>
+				<li class="nav-item {% if request.resolver_match.view_name == 'order' %}active{% endif %}">
+					<a class="nav-link" href="{% url 'order:index' %}">Penimbangan</a>
+				</li>
 			</ul>
 		</div>
 		{% else %}

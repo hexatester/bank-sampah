@@ -79,7 +79,7 @@ class OrderItem(models.Model):
                              on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{} x {}".format(self.item, self.value)
+        return "{} x {} kg".format(self.item, self.value)
 
     def get_sum(self):
         return abs(self.item.price*self.value)

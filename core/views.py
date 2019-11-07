@@ -24,7 +24,7 @@ class IndexView(View):
         if request.user.is_anonymous:
             return HttpResponseRedirect('/login')
         context = {
-            'nasabah_list': Nasabah.objects.filter(user=request.user),
+            'object_list': Nasabah.objects.filter(user=request.user),
             'orders': Order.objects.filter(user=request.user, ordered=False)
         }
         return render(request=request, template_name=self.template_name, context=context)

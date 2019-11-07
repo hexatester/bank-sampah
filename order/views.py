@@ -41,7 +41,7 @@ class OrderListView(BaseView, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.queryset.order_by('pk')
+        return queryset.order_by('-created')
 
 
 class OrderItemView(BaseView, DetailView):
@@ -140,6 +140,9 @@ class OrderSubmitView(BaseView, UpdateView):
     form_class = OrderSubmitForm
     template_name = 'order/submit.html'
 
+    def get_success_url(self):
+        return reverse('nasabah:index')
+
     def form_valid(self, form):
         order = form.save(commit=False)
         nasabah = order.nasabah
@@ -155,3 +158,7 @@ class OrderSubmitView(BaseView, UpdateView):
                 self.request, f'Gagal menambah saldo {nasabah}')
         order.save()
         return super().form_valid(form)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(ordered=False)
