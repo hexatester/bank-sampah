@@ -43,7 +43,7 @@
 			<td>{{ orderitem.item.name }}</td>
 			<td>Rp {{ orderitem.item.price|intcomma }}</td>
 			<td>{{ orderitem.value }} kg</td>
-			<td>Rp {{ orderitem.sum|intcomma }}</td>
+			<td>Rp {{ orderitem.get_total|intcomma }}</td>
 			<td>
 			<form method="get">
 				<input type="hidden" name="delete" value="{{ orderitem.pk }}">
@@ -94,7 +94,7 @@
 		{% else %}
 		<a href="#" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#modal">Simpan</a>
 		{% endif %}
-		<a href="{{ order.get_delete_url }}" class="btn btn-danger btn-sm">Hapus Penimbangans</a>
+		<a href="{{ order.get_delete_url }}" class="btn btn-danger btn-sm">Hapus</a>
 	</div>
 </div>
 

@@ -118,8 +118,9 @@ class OrderItem(models.Model):
     def get_sum(self):
         return abs(self.item.price*self.value)
 
-    def sum(self):
+    def get_total(self):
         self.total = self.get_sum()
+        self.save()
         return self.total
 
 
@@ -165,7 +166,7 @@ class Order(models.Model):
     def get_total(self):
         sums = 0
         for item in self.items.all():
-            sums += item.sum()
+            sums += item.get_total()
         self.total = sums
         return abs(sums)
 
