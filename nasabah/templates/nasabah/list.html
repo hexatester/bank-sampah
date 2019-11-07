@@ -10,7 +10,8 @@
                         <th>No</th>
                         <th>Nama</th>
                         <th>Saldo</th>                                                                                       <th>Transaksi</th>
-                        <th>Menu</th>                                                                                        <th>Alamat</th>                                                                              </tr>                                                                                        </thead>
+                        <th>Menu</th>
+		</tr>                                                                                        </thead>
         <!-- Table head -->
         <tbody>                                                                                                      {% for object in object_list %}
                 <tr>                                                                                                         <th scope="row">{{ forloop.counter }}</th>
@@ -18,9 +19,13 @@
                         <td>                                                                                                         <div class="btn-group">
 					<a href="{{ object.get_order_url }}" class="btn btn-outline-success btn-sm">Tambah</a>
 					<a href="{{ object.get_withdraw_url }}" class="btn btn-outline-danger btn-sm">Kurang</a>                                                                                                          </div>                                                                                       </td>
-                        <td>                                                                                                         <a href="{{ object.get_absolute_url }}" class="btn btn-outline-primary btn-sm">Edit</a>
-                        </td>
-                        <td>{{ object.addres }}</td>                                                                 </tr>
+                        <td>
+				<div class="btn-group">
+				<a href="{{ object.get_absolute_url }}" class="btn btn-outline-primary btn-sm">Edit</a>
+				{% include "nasabah/modal.html" %}
+				</div>
+			</td>
+		</tr>
                 {% endfor %}
         </tbody>
         <!-- Table body -->
