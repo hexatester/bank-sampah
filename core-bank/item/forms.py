@@ -1,11 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django import forms
-from core.models import (
-    Nasabah,
-    Item,
-    OrderItem,
-    Order
-)
+from item.models import Item
 
 
 class ItemCreateForm(forms.ModelForm):

@@ -1,15 +1,10 @@
-from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, reverse
-from django.contrib import messages, humanize
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
+from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
-from core.models import (
-    Nasabah,
-    Item,
-    OrderItem,
-    Order
-)
+from nasabah.models import Nasabah
 from .forms import (
     NasabahCreateForm,
     WithdrawForm
@@ -31,7 +26,12 @@ class BaseView(LoginRequiredMixin):
         return context
 
     def render(self, context: dict, *args, **kwargs):
-        return render(request=self.request, template_name=self.template_name, context=context, *args, **kwargs)
+        return render(
+            request=self.request,
+            template_name=self.template_name,
+            context=context,
+            *args,
+            **kwargs)
 
 
 class UserListView(BaseView, ListView):
@@ -46,7 +46,8 @@ class UserListView(BaseView, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['count'] = Nasabah.objects.filter(user=self.request.user).count()
+        context['count'] = Nasabah.objects.filter(
+            user=self.request.user).count()
         return context
 
 
@@ -106,10 +107,12 @@ class WithdrawView(BaseView, View):
                 nasabah.balance -= val
                 nasabah.save()
                 messages.success(
-                    request, f'Saldo {nasabah.name} berhasil dikurangi sebesar Rp {val}')
+                    request,
+                    f'Saldo {nasabah.name} berhasil dikurangi sebesar Rp {val}')
             else:
                 messages.warning(
-                    request, f'Saldo {nasabah.name} tidak mencukupi')
+                    request,
+                    f'Saldo {nasabah.name} tidak mencukupi')
         context = {
             'head_title': 'Kurangi Saldo',
             'nasabah': nasabah,

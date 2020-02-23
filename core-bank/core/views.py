@@ -5,13 +5,9 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.views import View
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from .models import (
-    Nasabah,
-    Item,
-    OrderItem,
-    Order
-)
-
+from nasabah.models import Nasabah
+from item.models import Item
+from order.models import Order, OrderItem
 # Create your views here.
 
 login_url = '/login'
@@ -39,6 +35,7 @@ class Logout(LoginRequiredMixin, LogoutView):
     login_url = login_url
     next_page = '/'
 
+
 class PasswordChangeView(LoginRequiredMixin, View):
     login_url = login_url
 
@@ -46,7 +43,7 @@ class PasswordChangeView(LoginRequiredMixin, View):
         context = {
             'head_title': "Ubah Password",
             'form': PasswordChangeForm()
-            }
+        }
         return render(request=request, template_name=self.template_name, context=context)
 
     def post(self, request, *args, **kwargs):
@@ -58,6 +55,6 @@ class PasswordChangeView(LoginRequiredMixin, View):
         context = {
             'head_title': "Ganti Password",
             'form': PasswordChangeForm()
-            }
+        }
         messages.warning(request, 'Passwrd gagal dirubah')
-        return render(request=request, template_name=self.template_name, context=context) 
+        return render(request=request, template_name=self.template_name, context=context)

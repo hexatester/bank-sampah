@@ -1,16 +1,13 @@
-from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, reverse
+from django.shortcuts import (
+    render, get_object_or_404, HttpResponseRedirect, reverse
+)
 from django.contrib import messages
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
-from core.models import (
-    Nasabah,
-    Item,
-    OrderItem,
-    Order
-)
+from nasabah.models import Nasabah
+from order.models import Order, OrderItem
 from .forms import (
     OrderItemCreateForm,
     OrderSubmitForm,
@@ -90,7 +87,10 @@ class OrderCreateView(LoginRequiredMixin, View):
         }
         if not created:
             context['order'] = orders
-        return render(request=request, template_name=self.template_name, context=context)
+        return render(
+            request=request,
+            template_name=self.template_name,
+            context=context)
 
     def post(self, request, pk, *args, **kwargs):
         nasabah = get_object_or_404(Nasabah, pk=pk, user=request.user)
@@ -139,15 +139,18 @@ class OrderSubmitView(BaseView, UpdateView):
         order = form.save(commit=False)
         nasabah = order.nasabah
         if form.cleaned_data['sums']:
-            order.ordered, order.total, order.weigth = True, order.get_total(), order.get_weigth()
+            order.ordered = True
+            order.total, order.weigth = order.get_total(), order.get_weigth()
             nasabah.add_balance(order.total)
             nasabah.save()
             messages.success(
-                self.request, f'Saldo {nasabah} berhasil ditambah Rp. {order.total}')
+                self.request,
+                f'Saldo {nasabah} berhasil ditambah Rp. {order.total}')
         else:
             order.ordered, order.total = True, order.get_total()
             messages.warning(
-                self.request, f'Berhasil menyimpan penimbangan {nasabah}')
+                self.request,
+                f'Berhasil menyimpan penimbangan {nasabah}')
         order.save()
         return super().form_valid(form)
 

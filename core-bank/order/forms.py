@@ -1,18 +1,15 @@
 from django.utils.translation import gettext_lazy as _
 from django import forms
-from core.models import (
-    Nasabah,
-    Item,
-    OrderItem,
-    Order
-)
+from order.models import Order, OrderItem
+from item.models import Item
 
 
 class OrderItemCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(OrderItemCreateForm, self).__init__(*args, **kwargs)
-        self.fields['item'].queryset = Item.objects.filter(user=user).order_by("name")
+        self.fields['item'].queryset = Item.objects.filter(
+            user=user).order_by("name")
 
     class Meta:
         model = OrderItem

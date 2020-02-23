@@ -15,15 +15,14 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Profile',
+            name='Item',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('balance', models.PositiveIntegerField(default=0)),
-                ('weight', models.PositiveIntegerField(default=0)),
-                ('timezone', models.CharField(default='Asia/Jakarta', max_length=64)),
+                ('name', models.CharField(max_length=64)),
+                ('price', models.PositiveIntegerField()),
                 ('timestamp', models.DateTimeField(auto_now=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

@@ -1,16 +1,7 @@
-from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, reverse
-from django.contrib import messages
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.views import View
-from core.models import (
-    Nasabah,
-    Item,
-    OrderItem,
-    Order
-)
+from item.models import Item
 from .forms import (
     ItemCreateForm
 )
