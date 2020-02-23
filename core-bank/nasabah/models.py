@@ -1,10 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
-from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 # Create your models here.
 
@@ -13,13 +9,19 @@ NULL_BLANK = {
     'null': True
 }
 
+
 class Nasabah(models.Model):
     objects = models.Manager()
-    name = models.CharField(max_length=64)
-    addres = models.TextField(max_length=126, **NULL_BLANK)
-    balance = models.PositiveIntegerField(default=0)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    name = models.CharField(
+        verbose_name='Nama', max_length=64)
+    addres = models.TextField(
+        verbose_name='Alamat', max_length=126, **NULL_BLANK)
+    balance = models.PositiveIntegerField(
+        verbose_name='Saldo', default=0)
+    user = models.ForeignKey(
+        verbose_name='Pengguna',
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 

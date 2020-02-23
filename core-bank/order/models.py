@@ -1,10 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
-from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from item.models import Item
 from nasabah.models import Nasabah
 # Create your models here.
@@ -16,12 +13,18 @@ NULL_BLANK = {
 
 
 class OrderItem(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    value = models.FloatField(validators=[MinValueValidator(0.25)])
-    total = models.PositiveIntegerField(null=True, blank=True)
-    nasabah = models.ForeignKey(Nasabah, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    item = models.ForeignKey(
+        verbose_name='Barang',
+        to=Item, on_delete=models.CASCADE)
+    value = models.FloatField(
+        verbose_name='Berat barang',
+        validators=[MinValueValidator(0.25)])
+    total = models.PositiveIntegerField(
+        null=True, blank=True)
+    nasabah = models.ForeignKey(
+        Nasabah, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return "{} x {} kg".format(self.item, self.value)
@@ -41,15 +44,28 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
-    nasabah = models.ForeignKey(Nasabah, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    items = models.ManyToManyField(OrderItem)
-    weigth = models.PositiveIntegerField(**NULL_BLANK)
-    total = models.PositiveIntegerField(**NULL_BLANK)
-    sums = models.BooleanField(default=False)
-    ordered = models.BooleanField(default=False)
-    timestamp = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    nasabah = models.ForeignKey(
+        to=Nasabah, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    items = models.ManyToManyField(
+        verbose_name='Barang',
+        to=OrderItem)
+    weigth = models.PositiveIntegerField(
+        verbose_name='Berat barang',
+        **NULL_BLANK)
+    total = models.PositiveIntegerField(
+        **NULL_BLANK)
+    sums = models.BooleanField(
+        verbose_name='Dimasukan ke tabungan',
+        default=False)
+    ordered = models.BooleanField(
+        verbose_name='Selesai',
+        default=False)
+    timestamp = models.DateTimeField(
+        auto_now=True)
+    created = models.DateTimeField(
+        auto_now_add=True)
 
     def __str__(self):
         return "Order by {}".format(self.nasabah)

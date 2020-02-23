@@ -21,5 +21,6 @@ urlpatterns = [
     path('', include('core.urls', namespace='core')),
     path('item/', include('item.urls', namespace='item')),
     path('nasabah/', include('nasabah.urls', namespace='nasabah')),
-    path('order/', include('order.urls', namespace='order'))
+    path('order/', include('order.urls', namespace='order')),
+    path('api/', include('core.api.urls'), name='api'),
 ]

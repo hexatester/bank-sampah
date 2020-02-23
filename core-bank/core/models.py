@@ -12,12 +12,21 @@ nulls = {
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    balance = models.PositiveIntegerField(default=0)
-    weight = models.PositiveIntegerField(default=0)
-    timezone = models.CharField(default="Asia/Jakarta", max_length=64)
-    timestamp = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE)
+    balance = models.PositiveIntegerField(
+        verbose_name='Saldo',
+        default=0)
+    weight = models.PositiveIntegerField(
+        verbose_name='Total berat barang terjual',
+        default=0)
+    timezone = models.CharField(
+        verbose_name='Waktu',
+        default="Asia/Jakarta", max_length=64)
+    timestamp = models.DateTimeField(
+        auto_now=True)
+    created = models.DateTimeField(
+        auto_now_add=True)
 
     def __str__(self):
         return self.user.username

@@ -1,10 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
-from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 # Create your models here.
@@ -14,11 +10,16 @@ nulls = {
     'null': True
 }
 
+
 class Item(models.Model):
-    name = models.CharField(max_length=64)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
-    price = models.PositiveIntegerField()
+    name = models.CharField(
+        verbose_name='Nama barang', max_length=64)
+    user = models.ForeignKey(
+        verbose_name='Pengguna',
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE)
+    price = models.PositiveIntegerField(
+        verbose_name='Harga')
     timestamp = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -34,4 +35,3 @@ class Item(models.Model):
         return reverse("item:delete", kwargs={
             'pk': self.pk
         })
-
