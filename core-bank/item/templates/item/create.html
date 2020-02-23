@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="card-header">
+	Tambah Barang
+</div>
+<!--Card content-->
+<div class="card-body">
+	<form method="post">{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" class="btn btn-primary btn-sm" value="Simpan">
+	</form>
+</div>
+
+
+{% endblock content %}

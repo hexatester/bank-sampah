@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load humanize tz %}
+{% block content %}
+
+
+<div class="card-header">
+	{{ object.name }}
+</div>
+<!--Card content-->
+<div class="card-body">
+	<form method="post">{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" class="btn btn-primary btn-sm" value="Simpan">
+	</form>
+</div>
+<div class="card-footer">
+	<h6>Dirubah : {{ object.timestamp|timezone:user.profile.timezone }} ({{ object.timestamp|naturaltime }})</h6>
+	<h6>Dibuat : {{ object.created|timezone:user.profile.timezone }} ({{ object.created|naturaltime }})</h6>
+</div>
+
+
+{% endblock content %}
